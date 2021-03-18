@@ -34,70 +34,77 @@
 </template>
 
 <script>
+import { userLogin } from "@/api/user";
+
 export default {
-    name: 'Login',
+    name: "Login",
     data() {
         return {
             title: process.env.VUE_APP_TITLE,
             form: {
-                account: localStorage.login_account || '',
-                password: '',
-                remember: !!localStorage.login_account
+                account: localStorage.login_account || "",
+                password: "",
+                remember: !!localStorage.login_account,
             },
             rules: {
-                account: [
-                    { required: true, trigger: 'blur', message: '请输入用户名' }
-                ],
+                account: [{ required: true, trigger: "blur", message: "请输入用户名" }],
                 password: [
-                    { required: true, trigger: 'blur', message: '请输入密码' },
-                    { min: 6, max: 18, trigger: 'blur', message: '密码长度为6到18位' }
-                ]
+                    { required: true, trigger: "blur", message: "请输入密码" },
+                    { min: 3, max: 18, trigger: "blur", message: "密码长度为3到18位" },
+                ],
             },
             loading: false,
-            passwordType: 'password',
-            redirect: undefined
-        }
+            passwordType: "password",
+            redirect: undefined,
+        };
     },
     watch: {
         $route: {
-            handler: function(route) {
-                this.redirect = route.query && route.query.redirect
+            handler: function (route) {
+                this.redirect = route.query && route.query.redirect;
             },
-            immediate: true
-        }
+            immediate: true,
+        },
     },
     methods: {
         showPassword() {
-            this.passwordType = this.passwordType === 'password' ? '' : 'password'
+            this.passwordType = this.passwordType === "password" ? "" : "password";
             this.$nextTick(() => {
-                this.$refs.password.focus()
-            })
+                this.$refs.password.focus();
+            });
         },
         handleLogin() {
-            this.$refs.form.validate(valid => {
+            this.$refs.form.validate((valid) => {
                 if (valid) {
-                    this.loading = true
-                    this.$store.dispatch('user/login', this.form).then(() => {
-                        this.loading = false
-                        this.form.remember && localStorage.setItem('login_account', this.form.account)
-                        this.$router.push({ path: this.redirect || '/' })
-                    }).catch(() => {
-                        this.loading = false
-                    })
+                    this.loading = true;
+                    userLogin(this.form)
+                        .then((res) => {
+                            this.loading = false;
+                            this.$store
+                                .dispatch("user/login", res.data)
+                                .then(() => {
+                                    this.form.remember && localStorage.setItem("login_account", this.form.account);
+                                    this.$router.push({ path: this.redirect || "/" });
+                                })
+                                .catch(() => {});
+                        })
+                        .catch(() => {
+                            this.loading = false;
+                        });
                 }
-            })
+            });
         },
         testAccount(account) {
-            this.form.account = account
-            this.form.password = '123456'
-            this.handleLogin()
-        }
-    }
-}
+            this.form.account = account;
+            this.form.password = "123";
+            this.handleLogin();
+        },
+    },
+};
 </script>
 
 <style lang="scss" scoped>
-[data-mode=mobile] {
+[data-mode="mobile"] {
     #login-box {
         max-width: 80%;
         .login-banner {
@@ -105,7 +112,7 @@ export default {
         }
     }
 }
-::v-deep input[type=password]::-ms-reveal {
+::v-deep input[type="password"]::-ms-reveal {
     display: none;
 }
 .bg-banner {

@@ -4,8 +4,8 @@ module.exports = [
         type: 'post',
         result: option => {
             return {
-                error: '',
-                state: 1,
+                msg: '',
+                code: 200,
                 data: {
                     account: option.body.account,
                     token: '@string',
@@ -33,8 +33,8 @@ module.exports = [
                 ]
             }
             return {
-                error: '',
-                state: 1,
+                msg: '',
+                code: 200,
                 data: {
                     permissions
                 }

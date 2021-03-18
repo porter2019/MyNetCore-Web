@@ -13,14 +13,14 @@ const toLogin = () => {
     })
 }
 
-const api = axios.create({
+const request = axios.create({
     baseURL: process.env.VUE_APP_API_ROOT,
     timeout: 10000,
     responseType: 'json'
     // withCredentials: true
 })
 
-api.interceptors.request.use(
+request.interceptors.request.use(
     request => {
         if (request.method == 'post') {
             if (request.data instanceof FormData) {
@@ -51,14 +51,14 @@ api.interceptors.request.use(
     }
 )
 
-api.interceptors.response.use(
+request.interceptors.response.use(
     response => {
-        if (response.data.error != '') {
+        if (response.data.code != 200) {
             // 如果接口请求时发现 token 失效，则立马跳转到登录页
-            if (response.data.status == 0) {
+            if (response.data.code === 401 || response.data.code === 412) {
                 toLogin()
             }
-            Message.error(response.data.error)
+            Message.error(response.data.msg)
             return Promise.reject(response.data)
         }
         return Promise.resolve(response.data)
@@ -68,4 +68,4 @@ api.interceptors.response.use(
     }
 )
 
-export default api
+export default request

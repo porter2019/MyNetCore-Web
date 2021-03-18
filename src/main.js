@@ -3,8 +3,8 @@ import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
 
-import api from './api'
-Vue.prototype.$api = api
+import request from './util/request'
+Vue.prototype.$request = request
 
 import dayjs from 'dayjs'
 Vue.prototype.$dayjs = dayjs

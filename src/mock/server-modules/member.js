@@ -3,8 +3,8 @@ const Mock = require('mockjs')
 export default {
     'POST /mock/member/login': (req, res) => {
         return res.json(Mock.mock({
-            error: '',
-            state: 1,
+            msg: '',
+            code: 200,
             data: {
                 account: req.body.account,
                 token: '@string',
@@ -27,8 +27,8 @@ export default {
             ]
         }
         return res.json({
-            error: '',
-            state: 1,
+            msg: '',
+            code: 200,
             data: {
                 permissions
             }

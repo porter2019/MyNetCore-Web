@@ -26,5 +26,6 @@
         // "src/icons":true,
         // "src/styles":true,
         // "src/assets":true,
-    }
+    },
+    "svg.preview.background": "transparent"
 }
