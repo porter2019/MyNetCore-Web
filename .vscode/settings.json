@@ -1,0 +1,30 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        //文件夹
+        // "dist":true,
+        "node_modules": true,
+        "public": true,
+        //配置文件
+        ".editorconfig": true,
+        ".eslintignore": true,
+        ".eslintrc.js": true,
+        ".stylelintignore": true,
+        "scss.template.hbs": true,
+        // ".gitignore": true,
+        "jsconfig.json": true,
+        "LICENSE": true,
+        ".stylelintrc": true,
+        // "README.md": true,
+        "yarn.lock":true,
+        "babel.config.js": true,
+        //src
+        // "src/icons":true,
+        // "src/styles":true,
+        // "src/assets":true,
+    }
+}
