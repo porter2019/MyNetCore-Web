@@ -1,4 +1,3 @@
-// import getCurrentUserPermissions from '@/api/user'
 import request from '@/util/request'
 
 const state = {

@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { userLogin } from "@/api/user";
+import { apiAccountLogin } from "@/api/user";
 
 export default {
     name: "Login",
@@ -77,7 +77,7 @@ export default {
             this.$refs.form.validate((valid) => {
                 if (valid) {
                     this.loading = true;
-                    userLogin(this.form)
+                    apiAccountLogin(this.form)
                         .then((res) => {
                             this.loading = false;
                             this.$store

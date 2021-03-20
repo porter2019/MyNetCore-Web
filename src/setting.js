@@ -8,7 +8,7 @@ let globalSettings = {
      */
     openPermission: true,
     // 是否显示头部
-    showHeader: true,
+    showHeader: false,
     // 是否开启侧边栏展开收起按钮
     enableSidebarCollapse: false,
     // 侧边栏是否收起

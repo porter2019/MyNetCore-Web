@@ -74,8 +74,8 @@ import ComponentBasicExample from './modules/component.basic.example'
 import ComponentExample from './modules/component.example'
 import PermissionExample from './modules/permission.example'
 import MockExample from './modules/mock.example'
-import VideosExample from './modules/videos.example'
 import ExTernalLinkExample from './modules/external.link.example'
+import SysUser from './modules/sys.user'
 import SysRole from './modules/sys.role'
 
 // 当 children 不为空的主导航只有一项时，则隐藏
@@ -86,7 +86,6 @@ let asyncRoutes = [
             icon: 'sidebar-default'
         },
         children: [
-            SysRole,
             MultilevelMenuExample,
             BreadcrumbExample,
             KeepAliveExample,
@@ -98,11 +97,12 @@ let asyncRoutes = [
     },
     {
         meta: {
-            title: '教程',
+            title: '系统管理',
             icon: 'sidebar-videos'
         },
         children: [
-            ...VideosExample
+            SysUser,
+            SysRole
         ]
     },
     {
@@ -139,7 +139,7 @@ VueRouter.prototype.replace = function replace(location) {
     return originalReplace.call(this, location).catch(err => err)
 }
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     store.state.settings.enableProgress && NProgress.start()
     // 已经登录，但还没根据权限动态挂载路由
     if (store.getters['user/isLogin'] && !store.state.menu.isGenerate) {

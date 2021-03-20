@@ -12,6 +12,9 @@ Vue.prototype.$dayjs = dayjs
 import auth from './util/auth'
 Vue.use(auth)
 
+import * as dateUtil from './util/date';
+Vue.prototype.$dateUtil = dateUtil
+
 import cookies from 'vue-cookies'
 Vue.use(cookies)
 
@@ -35,7 +38,7 @@ requireAll(req)
 
 import './assets/styles/reset.scss'
 
-import './mock'
+// import './mock'
 
 Vue.config.productionTip = false
 

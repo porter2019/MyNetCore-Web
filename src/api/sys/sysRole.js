@@ -1,9 +1,9 @@
 import request from "@/util/request"
 
-//登录
-export const apiAccountLogin = data => {
+//获取列表
+export const apiGetSysRolePageList = data => {
     return request({
-        url: '/account/login',
+        url: '/sysrole/get/pagelist',
         method: 'post',
         data
     })
