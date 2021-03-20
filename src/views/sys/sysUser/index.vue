@@ -1,37 +1,45 @@
 <template>
     <div>
-        <page-header title="系统用户列表" content="" />
-        
+        <!-- <page-header title="系统用户列表" content="" /> -->
+
         <page-main>
             <div class="table-tool">
                 <ul class="filter-container">
                     <li class="filter-item">
-                        <label>采购单位名称：</label>
-                        <el-input v-model="pageQuery.BuyerName" size="small" clearable placeholder="请输入采购单位名称"></el-input>
+                        <label>登录名：</label>
+                        <el-input v-model="pageQuery.LoginName" size="small" clearable placeholder="请输入" @change="pageQuery.PageOptions.PageIndex=1;getPageList()"></el-input>
+                    </li>
+                    <li class="filter-item">
+                        <label>用户名：</label>
+                        <el-input v-model="pageQuery.UserName" size="small" clearable placeholder="请输入" @change="pageQuery.PageOptions.PageIndex=1;getPageList()"></el-input>
+                    </li>
+                    <li class="filter-item">
+                        <label>创建日期：</label>
+                        <el-date-picker v-model="searchRangeDate" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" @change="searchDateChange"></el-date-picker>
                     </li>
                 </ul>
                 <div class="btn-container">
-                    <el-button class="btn-item" type="danger" size="small" icon="el-icon-delete">删除</el-button>
-                    <el-button class="btn-item" type="primary" size="small" icon="el-icon-download">导出</el-button>
+                    <el-button class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
+                    <el-button class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
                 </div>
             </div>
-            <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" @sort-change="sortChange" @selection-change="changeSelectItem">
-                <el-table-column label="用户ID" prop="userId" sortable="custom" min-width="80" fixed="left" header-align="center" align="left" show-overflow-tooltip></el-table-column>
-                <el-table-column label="登录名" prop="loginName" sortable="custom" min-width="80" fixed="left" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="用户名" prop="userName" min-width="100" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="密码" prop="password" min-width="80" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建者" prop="createdUserName" min-width="50" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建时间" prop="createdDate" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue)" sortable="custom" width="120" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="状态" prop="status" sortable="custom" min-width="50" align="center" fixed="right">
+            <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
+                <!--列太少就不要用fixed-->
+                <el-table-column type="selection" width="40" :key="Math.random()"></el-table-column>
+                <el-table-column label="登录名" prop="loginName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="用户名" prop="userName" min-width="70" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="密码" prop="password" min-width="140" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="创建者" prop="createdUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="创建时间" prop="createdDate" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue,'yyyy-MM-dd hh:mm')" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="状态" prop="status" sortable="custom" width="100" align="center">
                     <template slot-scope="{row}">
                         <el-tag v-if="row.status" type="success" size="small" effect="light">正常</el-tag>
                         <el-tag v-else type="danger" size="small" effect="light">禁用</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="160" align="center" fixed="right">
+                <el-table-column label="操作" width="120" align="center">
                     <template slot-scope="{row}">
-                        <el-button type="primary" size="mini" @click="showT1005(row)">账户余额</el-button>
-                        <el-button type="primary" size="mini" @click="show(row.Id)">查看</el-button>
+                        <el-button type="primary" size="mini" @click="show(row.id)">查看</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -41,7 +49,7 @@
 </template>
 
 <script>
-import { apiGetSysUserPageList } from "@/api/sys/sysUser";
+import { apiGetSysUserPageList, apiDeleteSysUserByIds } from "@/api/sys/sysUser";
 
 export default {
     data() {
@@ -125,6 +133,45 @@ export default {
                     this.listLoading = false;
                 });
         },
+        modify(id) {
+            if (!id) {
+                id = 0;
+            }
+            this.$router.push({
+                path: "edit",
+                query: { id: this.$base64.EnCode(id) },
+            });
+        },
+        show(id) {
+            this.$router.push({
+                path: "show",
+                query: { id: this.$base64.EnCode(id) },
+            });
+        },
+        del() {
+            var ids = [];
+            this.pageListSelectData.forEach((item) => {
+                ids.push(item.id);
+            });
+            if (ids.length < 1) {
+                this.$message.warning("请先选择需要删除的数据！");
+                return;
+            }
+
+            this.$confirm("确定删除选中的数据吗？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            })
+                .then(() => {
+                    apiDeleteSysUserByIds(ids.join(",")).then((res) => {
+                        this.$message.success(res.msg);
+                        this.pageQuery.PageOptions.PageIndex = 1;
+                        this.getPageList();
+                    });
+                })
+                .catch(() => {});
+        },
         searchDateChange(val) {
             if (!val) {
                 this.pageQuery.StartDate = "";
@@ -140,10 +187,11 @@ export default {
                 }
             }
         },
+
         sortChange(data) {
             this.pageQuery.PageOptions.PageIndex = 1;
-            if (data.order != null) this.pageQuery.orderBy = data.prop + " " + data.order.replace("ending", "");
-            else delete this.pageQuery["orderBy"];
+            if (data.order != null) this.pageQuery.PageOptions.orderBy = data.prop + " " + data.order.replace("ending", "");
+            else delete this.pageQuery.PageOptions["orderBy"];
             this.getPageList();
         },
         //行选中
@@ -161,33 +209,3 @@ export default {
     },
 };
 </script>
-
-<style lang="scss" scoped>
-.table-tool {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-}
-.table-tool .filter-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: row;
-    flex-direction: row;
-}
-.table-tool .filter-container .filter-item {
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    margin-right: 20px;
-}
-</style>

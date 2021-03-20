@@ -12,7 +12,10 @@ Vue.prototype.$dayjs = dayjs
 import auth from './util/auth'
 Vue.use(auth)
 
-import * as dateUtil from './util/date';
+import * as base64 from './util/base64'
+Vue.prototype.$base64 = base64
+
+import * as dateUtil from './util/date'
 Vue.prototype.$dateUtil = dateUtil
 
 import cookies from 'vue-cookies'
@@ -37,6 +40,9 @@ const requireAll = requireContext => requireContext.keys().map(requireContext)
 requireAll(req)
 
 import './assets/styles/reset.scss'
+
+// 自定义样式
+import './assets/styles/site.scss'
 
 // import './mock'
 

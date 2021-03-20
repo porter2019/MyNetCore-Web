@@ -1,0 +1,35 @@
+/** 自定义样式 **/
+// 列表页面
+.table-tool {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    .filter-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 0 0 10px 0;
+        padding: 0;
+    }
+    li {
+        display: flex;
+        align-items: center;
+        margin: 10px 20px 0 0;
+        label {
+            white-space: nowrap;
+        }
+    }
+}
+
+// 详情页
+.form-show,
+.form-edit {
+    .el-form-item {
+        .el-form-item__label {
+            font-weight: bold;
+        }
+        .el-form-item__label::after {
+            content: "：";
+        }
+    }
+}
