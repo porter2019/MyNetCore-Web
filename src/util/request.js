@@ -25,47 +25,16 @@ request.interceptors.request.use(
         if (request.method == 'post' && request.data == undefined) {
             request.data = {};//如果post不传值，则会报错：415/Unsupported Media Type，这里给个默认值
         }
-        request.headers = {
-            'Content-Type': 'application/json',
-            "x-auth-token": store.state.user.token
+        if (store.getters['user/isLogin']) {
+            request.headers = {
+                'Content-Type': 'application/json',
+                "x-auth-token": store.state.user.token
+            }
+        } else {
+            request.headers = {
+                'Content-Type': 'application/json',
+            }
         }
-        // if (store.getters['user/isLogin']) {
-        //     request.headers = {
-        //         "accept": "application/json",
-        //         "Content-Type": "application/json",
-        //         "x-auth-token": store.state.user.token
-        //     }
-        // } else {
-        //     request.headers = {
-        //         "accept": "application/json",
-        //         "Content-Type": "application/json"
-        //     }
-        // }
-        // if (request.method == 'post') {
-        //     if (request.data instanceof FormData) {
-        //         if (store.getters['user/isLogin']) {
-        //             // 如果是 FormData 类型（上传图片）
-        //             request.data.append('token', store.state.user.token)
-        //         }
-        //     } else {
-        //         // 带上 token
-        //         if (request.data == undefined) {
-        //             request.data = {}
-        //         }
-        //         if (store.getters['user/isLogin']) {
-        //             request.data.token = store.state.user.token
-        //         }
-        //         // request.data = Qs.stringify(request.data)
-        //     }
-        // } else {
-        //     // 带上 token
-        //     if (request.params == undefined) {
-        //         request.params = {}
-        //     }
-        //     if (store.getters['user/isLogin']) {
-        //         request.params.token = store.state.user.token
-        //     }
-        // }
         return request
     }
 )
@@ -79,10 +48,12 @@ request.interceptors.response.use(
             }
             Message.error(response.data.msg)
             return Promise.reject(response.data)
+        } else {
+            return Promise.resolve(response.data)
         }
-        return Promise.resolve(response.data)
     },
     error => {
+        Message.error(error.message)
         return Promise.reject(error)
     }
 )

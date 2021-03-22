@@ -15,6 +15,9 @@ Vue.use(auth)
 import * as base64 from './util/base64'
 Vue.prototype.$base64 = base64
 
+import * as globalVariable from "./util/global";
+Vue.prototype.$global = globalVariable
+
 import * as dateUtil from './util/date'
 Vue.prototype.$dateUtil = dateUtil
 

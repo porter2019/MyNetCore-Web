@@ -5,22 +5,22 @@
                 <el-col :md="24" :lg="12">
                     <el-form v-loading="formLoading" ref="formDef" :model="formData" label-width="120px" class="form-show">
                         <el-form-item label="用户id">
-                            {{ formData.id }}
+                            {{ formData.Id }}
                         </el-form-item>
                         <el-form-item label="登录名">
-                            {{ formData.loginName }}
+                            {{ formData.LoginName }}
                         </el-form-item>
                         <el-form-item label="用户名">
-                            {{ formData.userName }}
+                            {{ formData.UserName }}
                         </el-form-item>
                         <el-form-item label="状态">
                             {{ formData.status ? "正常":"禁用" }}
                         </el-form-item>
                         <el-form-item label="创建者">
-                            {{ formData.createdUserName }}
+                            {{ formData.CreatedUserName }}
                         </el-form-item>
                         <el-form-item label="创建时间">
-                            {{ formData.createdDate }}
+                            {{ formData.CreatedDate }}
                         </el-form-item>
                     </el-form>
                 </el-col>

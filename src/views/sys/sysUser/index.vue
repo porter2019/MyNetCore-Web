@@ -7,11 +7,11 @@
                 <ul class="filter-container">
                     <li class="filter-item">
                         <label>登录名：</label>
-                        <el-input v-model="pageQuery.LoginName" size="small" clearable placeholder="请输入" @change="pageQuery.PageOptions.PageIndex=1;getPageList()"></el-input>
+                        <el-input v-model="pageQuery.LoginName" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
                     </li>
                     <li class="filter-item">
                         <label>用户名：</label>
-                        <el-input v-model="pageQuery.UserName" size="small" clearable placeholder="请输入" @change="pageQuery.PageOptions.PageIndex=1;getPageList()"></el-input>
+                        <el-input v-model="pageQuery.UserName" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
                     </li>
                     <li class="filter-item">
                         <label>创建日期：</label>
@@ -26,24 +26,24 @@
             <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
                 <!--列太少就不要用fixed-->
                 <el-table-column type="selection" width="40" :key="Math.random()"></el-table-column>
-                <el-table-column label="登录名" prop="loginName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="用户名" prop="userName" min-width="70" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="密码" prop="password" min-width="140" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建者" prop="createdUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建时间" prop="createdDate" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue,'yyyy-MM-dd hh:mm')" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="状态" prop="status" sortable="custom" width="100" align="center">
+                <el-table-column label="登录名" prop="LoginName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="用户名" prop="UserName" min-width="70" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="密码" prop="Password" min-width="140" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="创建者" prop="CreatedUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="创建时间" prop="CreatedDate" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue,'yyyy-MM-dd hh:mm')" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center">
                     <template slot-scope="{row}">
-                        <el-tag v-if="row.status" type="success" size="small" effect="light">正常</el-tag>
+                        <el-tag v-if="row.Status" type="success" size="small" effect="light">正常</el-tag>
                         <el-tag v-else type="danger" size="small" effect="light">禁用</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="120" align="center">
                     <template slot-scope="{row}">
-                        <el-button type="primary" size="mini" @click="show(row.id)">查看</el-button>
+                        <el-button type="primary" size="mini" @click="show(row.Id)">查看</el-button>
                     </template>
                 </el-table-column>
             </el-table>
-            <Pagination v-show="total>0" :total="total" :currentpage="pageQuery.PageOptions.PageIndex" :pagesize.sync="pageQuery.PageOptions.PageSize" @current-change="changePageIndex" @size-change="changePageSize" />
+            <Pagination v-show="total>0" :total="total" :currentpage="pageQuery.PageInfo.PageIndex" :pagesize.sync="pageQuery.PageInfo.PageSize" @current-change="changePageIndex" @size-change="changePageSize" />
         </page-main>
     </div>
 </template>
@@ -59,11 +59,10 @@ export default {
             total: 0,
             listLoading: true,
             pageQuery: {
-                PageOptions: {
+                PageInfo: {
                     PageIndex: 1,
                     PageSize: 20,
                 },
-                Type: 0,
             },
             searchRangeDate: "",
             pickerOptions: {
@@ -166,7 +165,7 @@ export default {
                 .then(() => {
                     apiDeleteSysUserByIds(ids.join(",")).then((res) => {
                         this.$message.success(res.msg);
-                        this.pageQuery.PageOptions.PageIndex = 1;
+                        this.pageQuery.PageInfo.PageIndex = 1;
                         this.getPageList();
                     });
                 })
@@ -174,24 +173,22 @@ export default {
         },
         searchDateChange(val) {
             if (!val) {
-                this.pageQuery.StartDate = "";
-                this.pageQuery.EndDate = "";
-                this.pageQuery.PageOptions.PageIndex = 1;
+                this.pageQuery.CreatedDate = "";
+                this.pageQuery.PageInfo.PageIndex = 1;
                 this.getPageList();
             } else {
                 if (val.length == 2) {
-                    this.pageQuery.StartDate = val[0];
-                    this.pageQuery.EndDate = val[1];
-                    this.pageQuery.PageOptions.PageIndex = 1;
+                    this.pageQuery.CreatedDate = val[0] + ";" + val[1];
+                    this.pageQuery.PageInfo.PageIndex = 1;
                     this.getPageList();
                 }
             }
         },
 
         sortChange(data) {
-            this.pageQuery.PageOptions.PageIndex = 1;
-            if (data.order != null) this.pageQuery.PageOptions.orderBy = data.prop + " " + data.order.replace("ending", "");
-            else delete this.pageQuery.PageOptions["orderBy"];
+            this.pageQuery.PageInfo.PageIndex = 1;
+            if (data.order != null) this.pageQuery.PageInfo.orderBy = data.prop + " " + data.order.replace("ending", "");
+            else delete this.pageQuery.PageInfo["orderBy"];
             this.getPageList();
         },
         //行选中
@@ -199,11 +196,11 @@ export default {
             this.pageListSelectData = val;
         },
         changePageIndex(index) {
-            this.pageQuery.PageOptions.PageIndex = index;
+            this.pageQuery.PageInfo.PageIndex = index;
             this.getPageList();
         },
         changePageSize(size) {
-            this.pageQuery.PageOptions.PageSize = size;
+            this.pageQuery.PageInfo.PageSize = size;
             this.getPageList();
         },
     },
