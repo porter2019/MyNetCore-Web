@@ -14,7 +14,7 @@
                             {{ formData.UserName }}
                         </el-form-item>
                         <el-form-item label="状态">
-                            {{ formData.status ? "正常":"禁用" }}
+                            {{ formData.Status ? "正常":"禁用" }}
                         </el-form-item>
                         <el-form-item label="创建者">
                             {{ formData.CreatedUserName }}

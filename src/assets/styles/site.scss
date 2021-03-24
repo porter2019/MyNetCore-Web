@@ -16,9 +16,20 @@
         align-items: center;
         margin: 10px 20px 0 0;
         label {
+            font-weight: 400;
+            font-size: 14px;
             white-space: nowrap;
         }
     }
+}
+.el-table .el-table__fixed-header-wrapper .el-table__header thead th,
+.el-table .el-table__header-wrapper .el-table__header thead th {
+    // height: 50px;
+    // padding: 0;
+    background: rgba(0, 132, 255, 0.1);
+}
+.el-date-editor .el-range-separator {
+    width: 8%;
 }
 
 // 详情页

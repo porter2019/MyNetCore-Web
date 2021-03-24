@@ -4,9 +4,6 @@
             <el-row>
                 <el-col :md="24" :lg="12">
                     <el-form v-loading="formLoading" ref="formDef" :model="formData" status-icon :rules="formValidateRules" label-width="120px" class="form-edit">
-                        <!--主键id-->
-                        <el-input type="hidden" v-model="formData.UserId"></el-input>
-
                         <el-form-item label="登录名" prop="LoginName">
                             <el-input type="text" v-model="formData.LoginName" clearable placeholder="请输入登录名"></el-input>
                         </el-form-item>
@@ -16,7 +13,7 @@
                         <el-form-item label="密码" prop="Password">
                             <el-input type="password" v-model="formData.Password" clearable placeholder="请输入密码"></el-input>
                         </el-form-item>
-                        <el-form-item label="状态" prop="status">
+                        <el-form-item label="状态" prop="Status">
                             <el-switch v-model="formData.Status" active-text="启用" inactive-text="禁用">
                             </el-switch>
                         </el-form-item>

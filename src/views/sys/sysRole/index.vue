@@ -1,28 +1,208 @@
 <template>
     <div>
-        <h1>首页</h1>
-        <auth value="sysRole.show">
-            <router-link :to="{path:'show'}">详情页</router-link><br>
-        </auth>
-        <router-link v-auth="['sysRole.edit']" :to="{path:'edit'}">编辑</router-link>
+        <!-- <page-header title="系统用户列表" content="" /> -->
+
+        <page-main>
+            <div class="table-tool">
+                <ul class="filter-container">
+                    <li class="filter-item">
+                        <label>用户组名：</label>
+                        <el-input v-model="pageQuery.RoleName" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
+                    </li>
+                    <li class="filter-item">
+                        <label class="aaa">创建日期：</label>
+                        <el-date-picker v-model="searchRangeDate" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" @change="searchDateChange"></el-date-picker>
+                    </li>
+                </ul>
+                <div class="btn-container">
+                    <el-button class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
+                    <el-button class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
+                </div>
+            </div>
+            <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
+                <!--列太少就不要用fixed-->
+                <el-table-column type="selection" width="40" :key="Math.random()"></el-table-column>
+                <el-table-column label="用户组名称" prop="RoleName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="描述" prop="Description" min-width="120" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="超级管理组" prop="IsSuper" sortable="custom" width="120" align="center">
+                    <template slot-scope="{row}">
+                        <el-tag v-if="row.IsSuper" type="success" size="small" effect="light">是</el-tag>
+                        <el-tag v-else type="info" size="small" effect="light">否</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="创建者" prop="CreatedUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="创建时间" prop="CreatedDate" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue,'yyyy-MM-dd hh:mm')" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center">
+                    <template slot-scope="{row}">
+                        <el-tag v-if="row.Status" type="success" size="small" effect="light">正常</el-tag>
+                        <el-tag v-else type="danger" size="small" effect="light">禁用</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="120" align="center">
+                    <template slot-scope="{row}">
+                        <el-button type="primary" size="mini" @click="show(row.Id)">查看</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <Pagination v-show="total>0" :total="total" :currentpage="pageQuery.PageInfo.PageIndex" :pagesize.sync="pageQuery.PageInfo.PageSize" @current-change="changePageIndex" @size-change="changePageSize" />
+        </page-main>
     </div>
 </template>
 
 <script>
+import { apiGetSysRolePageList, apiDeleteSysRoleByIds } from "@/api/sys/sysRole";
+
 export default {
     data() {
         return {
-            account: this.$store.state.user.account,
+            pageListData: [],
+            pageListSelectData: [],
+            total: 0,
+            listLoading: true,
+            pageQuery: {
+                PageInfo: {
+                    PageIndex: 1,
+                    PageSize: 20,
+                },
+            },
+            searchRangeDate: "",
+            pickerOptions: {
+                shortcuts: [
+                    {
+                        text: "最近一周",
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            picker.$emit("pick", [start, end]);
+                        },
+                    },
+                    {
+                        text: "最近一个月",
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            picker.$emit("pick", [start, end]);
+                        },
+                    },
+                    {
+                        text: "最近三个月",
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            picker.$emit("pick", [start, end]);
+                        },
+                    },
+                    {
+                        text: "最近半年",
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 180);
+                            picker.$emit("pick", [start, end]);
+                        },
+                    },
+                    {
+                        text: "最近一年",
+                        onClick(picker) {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 360);
+                            picker.$emit("pick", [start, end]);
+                        },
+                    },
+                ],
+            },
         };
     },
+    created() {
+        this.getPageList();
+    },
     methods: {
-        permissionCheck(permissions) {
-            //permissions格式："" 或 ["",""]
-            if (this.$auth(permissions)) {
-                this.$message.success("校验通过");
-            } else {
-                this.$message.error("校验不通过");
+        getPageList() {
+            this.listLoading = true;
+            apiGetSysRolePageList(this.pageQuery)
+                .then((res) => {
+                    this.listLoading = false;
+                    this.pageListData = res.data;
+                    this.total = res.total;
+                })
+                .catch(() => {
+                    this.listLoading = false;
+                });
+        },
+        modify(id) {
+            if (!id) {
+                id = 0;
             }
+            this.$router.push({
+                path: "edit",
+                query: { id: this.$base64.EnCode(id) },
+            });
+        },
+        show(id) {
+            this.$router.push({
+                path: "show",
+                query: { id: this.$base64.EnCode(id) },
+            });
+        },
+        del() {
+            var ids = [];
+            this.pageListSelectData.forEach((item) => {
+                ids.push(item.id);
+            });
+            if (ids.length < 1) {
+                this.$message.warning("请先选择需要删除的数据！");
+                return;
+            }
+
+            this.$confirm("确定删除选中的数据吗？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            })
+                .then(() => {
+                    apiDeleteSysRoleByIds(ids.join(",")).then((res) => {
+                        this.$message.success(res.msg);
+                        this.pageQuery.PageInfo.PageIndex = 1;
+                        this.getPageList();
+                    });
+                })
+                .catch(() => {});
+        },
+        searchDateChange(val) {
+            if (!val) {
+                this.pageQuery.CreatedDate = "";
+                this.pageQuery.PageInfo.PageIndex = 1;
+                this.getPageList();
+            } else {
+                if (val.length == 2) {
+                    this.pageQuery.CreatedDate = val[0] + ";" + val[1];
+                    this.pageQuery.PageInfo.PageIndex = 1;
+                    this.getPageList();
+                }
+            }
+        },
+
+        sortChange(data) {
+            this.pageQuery.PageInfo.PageIndex = 1;
+            if (data.order != null) this.pageQuery.PageInfo.orderBy = data.prop + " " + data.order.replace("ending", "");
+            else delete this.pageQuery.PageInfo["orderBy"];
+            this.getPageList();
+        },
+        //行选中
+        changeSelectItem(val) {
+            this.pageListSelectData = val;
+        },
+        changePageIndex(index) {
+            this.pageQuery.PageInfo.PageIndex = index;
+            this.getPageList();
+        },
+        changePageSize(size) {
+            this.pageQuery.PageInfo.PageSize = size;
+            this.getPageList();
         },
     },
 };

@@ -8,7 +8,7 @@ export default {
     meta: {
         title: '用户组',
         icon: 'sidebar-menu',
-        auth: ['sysRole.index']
+        // auth: ['sysRole.index']
     },
     children: [
         {
@@ -18,7 +18,7 @@ export default {
             meta: {
                 title: "用户组列表",
                 icon: 'sidebar-default',
-                auth: ['sysRole.index']
+                // auth: ['sysRole.index']
             }
         },
         {
@@ -27,7 +27,7 @@ export default {
             component: () => import(/* webpackChunkName: 'sysRole' */ '@/views/sys/sysRole/show'),
             meta: {
                 title: '用户组详情',
-                auth: ['sysRole.show'],
+                // auth: ['sysRole.show'],
                 sidebar: false,
                 activeMenu: '/sys/sysRole/index'
             }
@@ -38,7 +38,7 @@ export default {
             component: () => import(/* webpackChunkName: 'sysRole' */ '@/views/sys/sysRole/edit'),
             meta: {
                 title: '用户组编辑',
-                auth: ['sysRole.modify'],
+                // auth: ['sysRole.modify'],
                 sidebar: false,
                 activeMenu: '/sys/sysRole/index'
             }

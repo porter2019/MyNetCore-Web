@@ -9,7 +9,7 @@ export const apiGetSysUserPageList = data => {
     })
 }
 
-//删除用户
+//删除
 export const apiDeleteSysUserByIds = (ids) => {
     return request({
         url: '/sysuser/delete',
@@ -18,7 +18,7 @@ export const apiDeleteSysUserByIds = (ids) => {
     })
 }
 
-//获取用户详情
+//获取详情
 export const apiGetSysUserInfo = (id) => {
     return request({
         url: '/sysuser/get/info',
@@ -27,7 +27,7 @@ export const apiGetSysUserInfo = (id) => {
     })
 }
 
-//编辑用户信息
+//编辑信息
 export const apiModifySysUserInfo = data => {
     return request({
         url: '/sysuser/modify',
