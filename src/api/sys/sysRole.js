@@ -44,3 +44,12 @@ export const apiCheckRoleNameExists = (roleId, roleName) => {
         params: { roleId: roleId, roleName: roleName }
     })
 }
+
+//获取组的权限设置数据
+export const apiGetRolePermitList = roleId => {
+    return request({
+        url: '/sysrole/get/permit/list',
+        method: 'get',
+        params: { roleId: roleId }
+    })
+}
