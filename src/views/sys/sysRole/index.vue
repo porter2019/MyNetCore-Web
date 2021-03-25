@@ -38,19 +38,40 @@
                         <el-tag v-else type="danger" size="small" effect="light">禁用</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="120" align="center">
+                <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="{row}">
+                        <el-button type="success" v-if="!row.IsSuper" size="mini" @click="openPermitDialog(row.RoleId)">设置权限</el-button>
                         <el-button type="primary" size="mini" @click="show(row.Id)">查看</el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <Pagination v-show="total>0" :total="total" :currentpage="pageQuery.PageInfo.PageIndex" :pagesize.sync="pageQuery.PageInfo.PageSize" @current-change="changePageIndex" @size-change="changePageSize" />
         </page-main>
+
+        <!-- 设置权限弹窗 -->
+        <el-dialog title="设置权限" :visible.sync="permitDialogVisible" width="80%" @close="closePermitDialog" :destroy-on-close="true">
+            <el-table class="power" :data="permitDataTable" v-if="(permitData || []).length > 0" border style="width: 100%;" :span-method="objectSpanMethod">
+                <el-table-column property="ModuleName" class="powerLeft" width="130px" align="center" label="所属模块"></el-table-column>
+                <el-table-column width="130" property="HandlerName" align="center" label="功能菜单"></el-table-column>
+                <el-table-column property="PermitList" align="left" label="操作">
+                    <template slot-scope="scope">
+                        <!-- <el-checkbox-group v-model="test[scope.$index]" > -->
+                        <el-checkbox v-for="(item,index) in scope.row.PermitList" @change="checkChange(item)" v-model="item.IsChecked" :label="item.PermitId" :key="index">{{item.PermitName}}</el-checkbox>
+                        <!-- </el-checkbox-group> -->
+                    </template>
+                </el-table-column>
+            </el-table>
+            <span slot="footer" class="dialog-footer">
+                <el-button class="determine" type="primary" @click="setPermit" size="small">确定</el-button>
+                <el-button class="cancel" @click="permitDialogVisible = false" size="small">取消</el-button>
+            </span>
+        </el-dialog>
+
     </div>
 </template>
 
 <script>
-import { apiGetSysRolePageList, apiDeleteSysRoleByIds } from "@/api/sys/sysRole";
+import { apiGetSysRolePageList, apiDeleteSysRoleByIds, apiGetRolePermitList } from "@/api/sys/sysRole";
 
 export default {
     data() {
@@ -115,6 +136,16 @@ export default {
                     },
                 ],
             },
+
+            //设置权限相关
+            permitDialogVisible: false,
+            permitData: [],
+            permitDataTable: [],
+            permitResult: [], //默认选中数据
+            checkShow: false,
+            rowspan: "",
+
+            roleId: "",
         };
     },
     created() {
@@ -203,6 +234,94 @@ export default {
         changePageSize(size) {
             this.pageQuery.PageInfo.PageSize = size;
             this.getPageList();
+        },
+        //下面都是设置权限相关
+        openPermitDialog(roleId) {
+            this.roleId = roleId;
+            this.permitDialogVisible = true;
+            // this.test = {}
+            apiGetRolePermitList(roleId)
+                .then((res) => {
+                    if (res.code === 200) {
+                        this.permitData = res.data;
+                        let arr = [];
+                        let rowspan = [];
+                        this.permitData.forEach((item) => {
+                            for (let i = 0; i < item.HandlerList.length; i++) {
+                                let rdata = {
+                                    ...item,
+                                    ...item.HandlerList[i],
+                                };
+                                rdata.combineNum = item.HandlerList.length; //长度
+                                delete rdata.HandlerList;
+                                // console.log(rdata,'rdata')
+                                rdata.PermitList.forEach((v) => {
+                                    // console.log(v,"vv")
+                                    if (v.IsChecked) {
+                                        this.permitResult.push(v.PermitId);
+                                    }
+                                });
+                                this.permitResult.push();
+                                arr.push(rdata);
+                                // 生成合并信息的数组 [3, 0, 0, 2, 0, 4, 0, 0, 0] 其中的0代表隐藏
+                                if (i == 0) {
+                                    rowspan.push(item.HandlerList.length);
+                                } else {
+                                    rowspan.push(0);
+                                }
+                            }
+                        });
+                        // console.log(this.permitResult,"回显All权限")
+                        this.permitDataTable = arr;
+                        this.rowspan = rowspan;
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                })
+                .catch((error) => {
+                    this.closePermitDialog();
+                });
+        },
+        setPermit() {
+            console.log(this.permitResult.join(","));
+            this.closePermitDialog();
+            // setPermit({ PermitIds: this.permitResult.join(","), RoleId: this.roleId }).then((res) => {
+            //     if (res.code == 200) {
+            //         this.$message({ message: res.msg, type: "success" });
+            //     }
+            //     this.permitDialogVisible = false;
+            // });
+        },
+        //权限checkbox点击事件
+        checkChange(val) {
+            if (val.IsChecked) {
+                //true add
+                this.permitResult.push(val.PermitId);
+            } else {
+                //false del
+                let index = this.permitResult.findIndex((v) => v == val.PermitId);
+                this.permitResult.splice(index, 1);
+            }
+        },
+        // 合并行
+        objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+            if ([0].includes(columnIndex)) {
+                const _row = this.rowspan[rowIndex];
+                const _col = _row > 0 ? 1 : 0; // 如果这一行隐藏了，这列也隐藏
+                return {
+                    rowspan: _row,
+                    colspan: _col,
+                };
+            }
+        },
+        closePermitDialog() {
+            this.permitDialogVisible = false;
+            this.permitData = [];
+            this.permitDataTable = [];
+            this.permitResult = []; //默认选中数据
+            this.checkShow = false;
+            this.rowspan = "";
+            this.roleId = "";
         },
     },
 };
