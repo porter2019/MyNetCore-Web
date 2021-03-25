@@ -3,7 +3,7 @@
         <page-main>
             <el-row>
                 <el-col :md="24" :lg="12">
-                    <el-form v-loading="formLoading" ref="formDef" :model="formData" label-width="120px" class="form-show">
+                    <el-form v-loading="formLoading" ref="formMain" :model="formData" label-width="120px" class="form-show">
                         <el-form-item label="组id">
                             {{ formData.Id }}
                         </el-form-item>

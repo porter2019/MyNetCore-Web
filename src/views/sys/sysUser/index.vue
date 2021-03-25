@@ -150,7 +150,7 @@ export default {
         del() {
             var ids = [];
             this.pageListSelectData.forEach((item) => {
-                ids.push(item.id);
+                ids.push(item.Id);
             });
             if (ids.length < 1) {
                 this.$message.warning("请先选择需要删除的数据！");

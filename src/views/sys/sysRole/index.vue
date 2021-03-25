@@ -55,15 +55,13 @@
                 <el-table-column width="130" property="HandlerName" align="center" label="功能菜单"></el-table-column>
                 <el-table-column property="PermitList" align="left" label="操作">
                     <template slot-scope="scope">
-                        <!-- <el-checkbox-group v-model="test[scope.$index]" > -->
-                        <el-checkbox v-for="(item,index) in scope.row.PermitList" @change="checkChange(item)" v-model="item.IsChecked" :label="item.PermitId" :key="index">{{item.PermitName}}</el-checkbox>
-                        <!-- </el-checkbox-group> -->
+                        <el-checkbox v-for="(item,index) in scope.row.PermitList" @change="permitCheckBoxChange(item)" v-model="item.IsChecked" :label="item.PermitId" :key="index">{{item.PermitName}}</el-checkbox>
                     </template>
                 </el-table-column>
             </el-table>
             <span slot="footer" class="dialog-footer">
-                <el-button class="determine" type="primary" @click="setPermit" size="small">确定</el-button>
-                <el-button class="cancel" @click="permitDialogVisible = false" size="small">取消</el-button>
+                <el-button class="determine" type="primary" @click="modifyPermit" size="small">确定</el-button>
+                <el-button class="cancel" @click="closePermitDialog" size="small">取消</el-button>
             </span>
         </el-dialog>
 
@@ -71,7 +69,8 @@
 </template>
 
 <script>
-import { apiGetSysRolePageList, apiDeleteSysRoleByIds, apiGetRolePermitList } from "@/api/sys/sysRole";
+
+import { apiGetSysRolePageList, apiDeleteSysRoleByIds, apiGetRolePermitList, apiModifyRolePermit } from "@/api/sys/sysRole";
 
 export default {
     data() {
@@ -182,7 +181,7 @@ export default {
         del() {
             var ids = [];
             this.pageListSelectData.forEach((item) => {
-                ids.push(item.id);
+                ids.push(item.Id);
             });
             if (ids.length < 1) {
                 this.$message.warning("请先选择需要删除的数据！");
@@ -239,7 +238,6 @@ export default {
         openPermitDialog(roleId) {
             this.roleId = roleId;
             this.permitDialogVisible = true;
-            // this.test = {}
             apiGetRolePermitList(roleId)
                 .then((res) => {
                     if (res.code === 200) {
@@ -282,18 +280,22 @@ export default {
                     this.closePermitDialog();
                 });
         },
-        setPermit() {
-            console.log(this.permitResult.join(","));
-            this.closePermitDialog();
-            // setPermit({ PermitIds: this.permitResult.join(","), RoleId: this.roleId }).then((res) => {
-            //     if (res.code == 200) {
-            //         this.$message({ message: res.msg, type: "success" });
-            //     }
-            //     this.permitDialogVisible = false;
-            // });
+        modifyPermit() {
+            apiModifyRolePermit(this.roleId, this.permitResult.join(","))
+                .then((res) => {
+                    if (res.code === 200) {
+                        this.$message.success("设置成功");
+                        this.closePermitDialog();
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                })
+                .catch(() => {
+                    this.$message.error("远程通讯失败");
+                });
         },
         //权限checkbox点击事件
-        checkChange(val) {
+        permitCheckBoxChange(val) {
             if (val.IsChecked) {
                 //true add
                 this.permitResult.push(val.PermitId);
@@ -321,7 +323,7 @@ export default {
             this.permitResult = []; //默认选中数据
             this.checkShow = false;
             this.rowspan = "";
-            this.roleId = "";
+            this.roleId = 0;
         },
     },
 };

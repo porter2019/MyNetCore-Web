@@ -53,3 +53,12 @@ export const apiGetRolePermitList = roleId => {
         params: { roleId: roleId }
     })
 }
+
+//设置组的权限
+export const apiModifyRolePermit = (roleId, permits) => {
+    return request({
+        url: '/sysrole/modify/permit',
+        method: 'post',
+        params: { roleId: roleId, permits: permits }
+    })
+}

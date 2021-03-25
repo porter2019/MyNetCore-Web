@@ -3,7 +3,7 @@
         <page-main>
             <el-row>
                 <el-col :md="24" :lg="12">
-                    <el-form v-loading="formLoading" ref="formDef" :model="formData" status-icon :rules="formValidateRules" label-width="120px" class="form-edit">
+                    <el-form v-loading="formLoading" ref="formMain" :model="formData" status-icon :rules="formValidateRules" label-width="120px" class="form-edit">
                         <el-form-item label="组名" prop="RoleName">
                             <el-input type="text" v-model="formData.RoleName" clearable placeholder="请输入组名"></el-input>
                         </el-form-item>
@@ -88,7 +88,7 @@ export default {
                 });
         },
         saveFormData() {
-            this.$refs.formDef.validate((valid) => {
+            this.$refs.formMain.validate((valid) => {
                 if (valid) {
                     this.formLoading = true;
                     apiModifySysRoleInfo(this.formData)
