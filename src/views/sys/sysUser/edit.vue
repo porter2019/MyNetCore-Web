@@ -4,6 +4,12 @@
             <el-row>
                 <el-col :md="24" :lg="12">
                     <el-form v-loading="formLoading" ref="formMain" :model="formData" status-icon :rules="formValidateRules" label-width="120px" class="form-edit">
+                        <el-form-item label="所属组" prop="Role">
+                            <el-select v-model="formData.RoleIdArray" multiple placeholder="请选择">
+                                <el-option v-for="item in roleOptionList" :key="item.RoleId" :label="item.RoleName" :value="item.RoleId">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
                         <el-form-item label="登录名" prop="LoginName">
                             <el-input type="text" v-model="formData.LoginName" clearable placeholder="请输入登录名"></el-input>
                         </el-form-item>
@@ -23,7 +29,7 @@
         </page-main>
 
         <fixed-action-bar>
-            <el-button icon="el-icon-check" type="primary" @click="saveFormData()">保存</el-button>
+            <el-button icon="el-icon-check" type="primary" @click="saveFormData()" v-if="!formLoading">保存</el-button>
             <el-button icon="el-icon-back" @click="goBack()">返回</el-button>
         </fixed-action-bar>
     </div>
@@ -31,6 +37,7 @@
 
 <script>
 import { apiGetSysUserInfo, apiModifySysUserInfo, apiCheckLoginNameExists } from "@/api/sys/sysUser";
+import { apiGetSysRoleAllList } from "@/api/sys/sysRole";
 
 export default {
     data() {
@@ -73,6 +80,9 @@ export default {
                     { min: 3, max: 30, message: "密码长度范围在3-30之间" },
                 ],
             },
+
+            //组数据
+            roleOptionList: [],
         };
     },
     created() {
@@ -83,6 +93,20 @@ export default {
         this.loadFormData();
     },
     methods: {
+        //下拉列表数据
+        loadRoleList() {
+            apiGetSysRoleAllList()
+                .then((res) => {
+                    if (res.code === 200) {
+                        this.roleOptionList = res.data;
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                })
+                .catch(() => {
+                    this.$message.error("获取用户组数据失败");
+                });
+        },
         //加载表单数据
         loadFormData() {
             this.formLoading = true;
@@ -90,15 +114,18 @@ export default {
                 .then((res) => {
                     this.formLoading = false;
                     this.formData = res.data || {};
+                    this.loadRoleList();
                 })
                 .catch(() => {
                     this.formLoading = false;
                 });
         },
         saveFormData() {
+            console.log(this.formData);
             this.$refs.formMain.validate((valid) => {
                 if (valid) {
                     this.formLoading = true;
+                    delete this.formData["RoleInfo"];
                     apiModifySysUserInfo(this.formData)
                         .then((res) => {
                             this.formLoading = false;
@@ -111,6 +138,7 @@ export default {
                         })
                         .catch(() => {
                             this.formLoading = false;
+                            this.$message.error("远程通讯失败");
                         });
                 } else {
                     this.$message.warning("请检查表单信息是否填写完整");

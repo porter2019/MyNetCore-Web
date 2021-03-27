@@ -13,6 +13,9 @@
                         <el-form-item label="用户名">
                             {{ formData.UserName }}
                         </el-form-item>
+                        <el-form-item label="所属组">
+                            {{ formatRoleInfo(formData.RoleInfo) }}
+                        </el-form-item>
                         <el-form-item label="状态">
                             {{ formData.Status ? "正常":"禁用" }}
                         </el-form-item>
@@ -28,7 +31,7 @@
         </page-main>
 
         <fixed-action-bar>
-            <el-button icon="el-icon-edit" type="primary" @click="goModify()" v-if="id > 0">编辑</el-button>
+            <el-button icon="el-icon-edit" type="primary" @click="goModify()" v-if="id > 0 && !formLoading">编辑</el-button>
             <el-button icon="el-icon-back" @click="goBack()">返回</el-button>
         </fixed-action-bar>
     </div>
@@ -53,6 +56,20 @@ export default {
         this.loadFormData();
     },
     methods: {
+        formatRoleInfo(roleInfo) {
+            if (!roleInfo) return "-";
+            var tempArr = [];
+            (roleInfo.split(",") || []).forEach((item) => {
+                if (item) {
+                    var roleArr = item.split(";");
+                    if (roleArr.length == 2) {
+                        tempArr.push(roleArr[1]);
+                    }
+                }
+            });
+            if (tempArr.length == 0) return "-";
+            return tempArr.join("，");
+        },
         //加载表单数据
         loadFormData() {
             this.formLoading = true;

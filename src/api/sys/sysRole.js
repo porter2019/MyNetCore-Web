@@ -9,6 +9,14 @@ export const apiGetSysRolePageList = data => {
     })
 }
 
+//获取所有数据正常的组，无需权限
+export const apiGetSysRoleAllList = function () {
+    return request({
+        url: '/sysrole/get/list',
+        method: 'get',
+    })
+}
+
 //删除
 export const apiDeleteSysRoleByIds = (ids) => {
     return request({

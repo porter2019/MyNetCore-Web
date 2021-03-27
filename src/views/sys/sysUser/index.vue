@@ -6,6 +6,13 @@
             <div class="table-tool">
                 <ul class="filter-container">
                     <li class="filter-item">
+                        <label>所属组：</label>
+                        <el-select v-model="pageQuery.RoleId" clearable placeholder="请选择" @change="pageQuery.PageInfo.PageIndex=1;getPageList()" @clear="delete pageQuery['RoleId']">
+                            <el-option v-for="item in roleOptionList" :key="item.RoleId" :label="item.RoleName" :value="item.RoleId">
+                            </el-option>
+                        </el-select>
+                    </li>
+                    <li class="filter-item">
                         <label>登录名：</label>
                         <el-input v-model="pageQuery.LoginName" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
                     </li>
@@ -28,7 +35,11 @@
                 <el-table-column type="selection" width="40" :key="Math.random()"></el-table-column>
                 <el-table-column label="登录名" prop="LoginName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="用户名" prop="UserName" min-width="70" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="密码" prop="Password" min-width="140" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="所属组" prop="RoleInfo" min-width="140" align="center" show-overflow-tooltip>
+                    <template slot-scope="{row}">
+                        {{ formatRoleInfo(row.RoleInfo) }}
+                    </template>
+                </el-table-column>
                 <el-table-column label="创建者" prop="CreatedUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="创建时间" prop="CreatedDate" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue,'yyyy-MM-dd hh:mm')" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center">
@@ -50,6 +61,7 @@
 
 <script>
 import { apiGetSysUserPageList, apiDeleteSysUserByIds } from "@/api/sys/sysUser";
+import { apiGetSysRoleAllList } from "@/api/sys/sysRole";
 
 export default {
     data() {
@@ -114,22 +126,58 @@ export default {
                     },
                 ],
             },
+
+            //组数据
+            roleOptionList: [],
         };
     },
     created() {
         this.getPageList();
+        this.loadRoleList();
     },
     methods: {
+        formatRoleInfo(roleInfo) {
+            if (!roleInfo) return "-";
+            var tempArr = [];
+            (roleInfo.split(",") || []).forEach((item) => {
+                if (item) {
+                    var roleArr = item.split(";");
+                    if (roleArr.length == 2) {
+                        tempArr.push(roleArr[1]);
+                    }
+                }
+            });
+            if (tempArr.length == 0) return "-";
+            return tempArr.join("，");
+        },
         getPageList() {
             this.listLoading = true;
             apiGetSysUserPageList(this.pageQuery)
                 .then((res) => {
                     this.listLoading = false;
-                    this.pageListData = res.data;
-                    this.total = res.total;
+                    if (res.code === 200) {
+                        this.pageListData = res.data;
+                        this.total = res.total;
+                    } else {
+                        this.$message.error(res.msg);
+                    }
                 })
                 .catch(() => {
                     this.listLoading = false;
+                });
+        },
+        //下拉列表数据
+        loadRoleList() {
+            apiGetSysRoleAllList()
+                .then((res) => {
+                    if (res.code === 200) {
+                        this.roleOptionList = res.data;
+                    } else {
+                        this.$message.error(res.msg);
+                    }
+                })
+                .catch(() => {
+                    this.$message.error("获取用户组数据失败");
                 });
         },
         modify(id) {
@@ -164,12 +212,18 @@ export default {
             })
                 .then(() => {
                     apiDeleteSysUserByIds(ids.join(",")).then((res) => {
-                        this.$message.success(res.msg);
-                        this.pageQuery.PageInfo.PageIndex = 1;
-                        this.getPageList();
+                        if (res.code === 200) {
+                            this.$message.success(res.msg);
+                            this.pageQuery.PageInfo.PageIndex = 1;
+                            this.getPageList();
+                        } else {
+                            this.$message.error(res.msg);
+                        }
                     });
                 })
-                .catch(() => {});
+                .catch(() => {
+                    this.$message.error("远程通讯失败");
+                });
         },
         searchDateChange(val) {
             if (!val) {

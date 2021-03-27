@@ -24,7 +24,7 @@
         </page-main>
 
         <fixed-action-bar>
-            <el-button icon="el-icon-check" type="primary" @click="saveFormData()">保存</el-button>
+            <el-button icon="el-icon-check" type="primary" @click="saveFormData()" v-if="!formLoading">保存</el-button>
             <el-button icon="el-icon-back" @click="goBack()">返回</el-button>
         </fixed-action-bar>
     </div>
@@ -103,6 +103,7 @@ export default {
                         })
                         .catch(() => {
                             this.formLoading = false;
+                            this.$message.error("远程通讯失败");
                         });
                 } else {
                     this.$message.warning("请检查表单信息是否填写完整");

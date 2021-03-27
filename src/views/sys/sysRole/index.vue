@@ -49,7 +49,7 @@
         </page-main>
 
         <!-- 设置权限弹窗 -->
-        <el-dialog title="设置权限" :visible.sync="permitDialogVisible" width="80%" @close="closePermitDialog" :destroy-on-close="true">
+        <el-dialog title="设置权限" v-loading="permitLoading" :visible.sync="permitDialogVisible" width="80%" @close="closePermitDialog" :destroy-on-close="true">
             <el-table class="power" :data="permitDataTable" v-if="(permitData || []).length > 0" border style="width: 100%;" :span-method="objectSpanMethod">
                 <el-table-column property="ModuleName" class="powerLeft" width="130px" align="center" label="所属模块"></el-table-column>
                 <el-table-column width="130" property="HandlerName" align="center" label="功能菜单"></el-table-column>
@@ -60,7 +60,7 @@
                 </el-table-column>
             </el-table>
             <span slot="footer" class="dialog-footer">
-                <el-button class="determine" type="primary" @click="modifyPermit" size="small">确定</el-button>
+                <el-button class="determine" type="primary" @click="modifyPermit" size="small" v-if="!permitLoading">确定</el-button>
                 <el-button class="cancel" @click="closePermitDialog" size="small">取消</el-button>
             </span>
         </el-dialog>
@@ -69,7 +69,6 @@
 </template>
 
 <script>
-
 import { apiGetSysRolePageList, apiDeleteSysRoleByIds, apiGetRolePermitList, apiModifyRolePermit } from "@/api/sys/sysRole";
 
 export default {
@@ -137,6 +136,7 @@ export default {
             },
 
             //设置权限相关
+            permitLoading: true,
             permitDialogVisible: false,
             permitData: [],
             permitDataTable: [],
@@ -156,8 +156,12 @@ export default {
             apiGetSysRolePageList(this.pageQuery)
                 .then((res) => {
                     this.listLoading = false;
-                    this.pageListData = res.data;
-                    this.total = res.total;
+                    if (res.code === 200) {
+                        this.pageListData = res.data;
+                        this.total = res.total;
+                    } else {
+                        this.$message.error(res.msg);
+                    }
                 })
                 .catch(() => {
                     this.listLoading = false;
@@ -194,11 +198,19 @@ export default {
                 type: "warning",
             })
                 .then(() => {
-                    apiDeleteSysRoleByIds(ids.join(",")).then((res) => {
-                        this.$message.success(res.msg);
-                        this.pageQuery.PageInfo.PageIndex = 1;
-                        this.getPageList();
-                    });
+                    apiDeleteSysRoleByIds(ids.join(","))
+                        .then((res) => {
+                            if (res.code === 200) {
+                                this.$message.success(res.msg);
+                                this.pageQuery.PageInfo.PageIndex = 1;
+                                this.getPageList();
+                            } else {
+                                this.$message.error(res.msg);
+                            }
+                        })
+                        .catch(() => {
+                            this.$message.error("远程通讯失败");
+                        });
                 })
                 .catch(() => {});
         },
@@ -238,8 +250,10 @@ export default {
         openPermitDialog(roleId) {
             this.roleId = roleId;
             this.permitDialogVisible = true;
+            this.permitLoading = true;
             apiGetRolePermitList(roleId)
                 .then((res) => {
+                    this.permitLoading = false;
                     if (res.code === 200) {
                         this.permitData = res.data;
                         let arr = [];
@@ -277,6 +291,8 @@ export default {
                     }
                 })
                 .catch((error) => {
+                    this.$message.error("远程通讯失败");
+                    this.permitLoading = false;
                     this.closePermitDialog();
                 });
         },
