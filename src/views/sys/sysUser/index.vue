@@ -32,7 +32,7 @@
             </div>
             <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
                 <!--列太少就不要用fixed-->
-                <el-table-column type="selection" width="40" :key="Math.random()"></el-table-column>
+                <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column label="登录名" prop="LoginName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="用户名" prop="UserName" min-width="70" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="所属组" prop="RoleInfo" min-width="140" align="center" show-overflow-tooltip>

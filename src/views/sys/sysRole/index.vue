@@ -21,7 +21,7 @@
             </div>
             <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
                 <!--列太少就不要用fixed-->
-                <el-table-column type="selection" width="40" :key="Math.random()"></el-table-column>
+                <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column label="用户组名称" prop="RoleName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="描述" prop="Description" min-width="120" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="超级管理组" prop="IsSuper" sortable="custom" width="120" align="center">

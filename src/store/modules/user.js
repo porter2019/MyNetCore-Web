@@ -69,12 +69,12 @@ const actions = {
 
 const mutations = {
     setUserData(state, data) {
-        localStorage.setItem('account', data.loginName)
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('failure_time', data.failureTime)
-        state.account = data.loginName
-        state.token = data.token
-        state.failure_time = data.failureTime
+        localStorage.setItem('account', data.LoginName)
+        localStorage.setItem('token', data.Token)
+        localStorage.setItem('failure_time', data.FailureTime)
+        state.account = data.LoginName
+        state.token = data.Token
+        state.failure_time = data.FailureTime
     },
     removeUserData(state) {
         localStorage.removeItem('account')

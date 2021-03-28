@@ -75,8 +75,8 @@ import ComponentExample from './modules/component.example'
 import PermissionExample from './modules/permission.example'
 import MockExample from './modules/mock.example'
 import ExTernalLinkExample from './modules/external.link.example'
-import SysUser from './modules/sys.user'
-import SysRole from './modules/sys.role'
+
+import Sys from './modules/sys'
 
 // 当 children 不为空的主导航只有一项时，则隐藏
 let asyncRoutes = [
@@ -101,8 +101,7 @@ let asyncRoutes = [
             icon: 'sidebar-videos'
         },
         children: [
-            SysUser,
-            SysRole
+            Sys
         ]
     },
     {
