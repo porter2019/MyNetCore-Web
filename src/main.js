@@ -21,6 +21,12 @@ Vue.prototype.$global = globalVariable
 import * as dateUtil from './util/date'
 Vue.prototype.$dateUtil = dateUtil
 
+import * as mathUtil from './util/math'
+Vue.prototype.$mathUtil = mathUtil
+
+import * as numberUtil from './util/number'
+Vue.prototype.$numberUtil = numberUtil
+
 import cookies from 'vue-cookies'
 Vue.use(cookies)
 

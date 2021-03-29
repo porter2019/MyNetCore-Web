@@ -4,7 +4,7 @@
         <page-main>
             <el-row>
                 <el-col :md="24" :lg="12">
-                    <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+                    <el-form ref="form" :model="form" :rules="rules" label-width="140px">
                         <el-form-item label="原密码" prop="password">
                             <el-input v-model="form.password" type="password" placeholder="请输入原密码" />
                         </el-form-item>

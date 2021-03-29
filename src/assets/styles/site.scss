@@ -20,6 +20,9 @@
             font-size: 14px;
             white-space: nowrap;
         }
+        label::after {
+            content: "：";
+        }
     }
 }
 .el-table .el-table__fixed-header-wrapper .el-table__header thead th,
@@ -30,6 +33,17 @@
 }
 .el-date-editor .el-range-separator {
     width: 8%;
+}
+
+// 编辑页
+.el-select {
+    width: 100% !important;
+}
+.el-date-editor {
+    width: 100% !important;
+}
+.page-main {
+    margin-bottom: 60px !important;
 }
 
 // 详情页

@@ -1,33 +1,51 @@
 <template>
     <div>
-        <page-main>
-            <el-row>
-                <el-col :md="24" :lg="12">
-                    <el-form v-loading="formLoading" ref="formMain" :model="formData" label-width="120px" class="form-show">
+        <page-main title="详情">
+            <el-form v-loading="formLoading" ref="formMain" :model="formData" label-width="140px" class="form-show">
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="用户id">
                             {{ formData.Id }}
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
                         <el-form-item label="登录名">
                             {{ formData.LoginName }}
                         </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="用户名">
                             {{ formData.UserName }}
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
                         <el-form-item label="所属组">
                             {{ formatRoleInfo(formData.RoleInfo) }}
                         </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="状态">
                             {{ formData.Status ? "正常":"禁用" }}
                         </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="创建者">
                             {{ formData.CreatedUserName }}
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
                         <el-form-item label="创建时间">
                             {{ formData.CreatedDate }}
                         </el-form-item>
-                    </el-form>
-                </el-col>
-            </el-row>
+                    </el-col>
+                </el-row>
+            </el-form>
         </page-main>
 
         <fixed-action-bar>

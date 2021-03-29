@@ -70,13 +70,11 @@ const constantRoutes = [
 import MultilevelMenuExample from './modules/multilevel.menu.example'
 import BreadcrumbExample from './modules/breadcrumb.example'
 import KeepAliveExample from './modules/keep.alive.example'
-import ComponentBasicExample from './modules/component.basic.example'
 import ComponentExample from './modules/component.example'
 import PermissionExample from './modules/permission.example'
-import MockExample from './modules/mock.example'
-import ExTernalLinkExample from './modules/external.link.example'
 
 import Sys from './modules/sys'
+import Demo from './modules/demo'
 
 // 当 children 不为空的主导航只有一项时，则隐藏
 let asyncRoutes = [
@@ -86,13 +84,12 @@ let asyncRoutes = [
             icon: 'sidebar-default'
         },
         children: [
+            Demo,
             MultilevelMenuExample,
             BreadcrumbExample,
             KeepAliveExample,
-            ComponentBasicExample,
             ComponentExample,
-            PermissionExample,
-            MockExample
+            PermissionExample
         ]
     },
     {
@@ -102,15 +99,6 @@ let asyncRoutes = [
         },
         children: [
             Sys
-        ]
-    },
-    {
-        meta: {
-            title: '其它',
-            icon: 'sidebar-other'
-        },
-        children: [
-            ExTernalLinkExample
         ]
     }
 ]

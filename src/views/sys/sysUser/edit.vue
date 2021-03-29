@@ -1,31 +1,47 @@
 <template>
     <div>
-        <page-main>
-            <el-row>
-                <el-col :md="24" :lg="12">
-                    <el-form v-loading="formLoading" ref="formMain" :model="formData" status-icon :rules="formValidateRules" label-width="120px" class="form-edit">
+        <page-main :title="pageTitle">
+            <el-form v-loading="formLoading" ref="formMain" :model="formData" status-icon :rules="formValidateRules" label-width="140px" class="form-edit">
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="所属组" prop="Role">
                             <el-select v-model="formData.RoleIdArray" multiple placeholder="请选择">
                                 <el-option v-for="item in roleOptionList" :key="item.RoleId" :label="item.RoleName" :value="item.RoleId">
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
                         <el-form-item label="登录名" prop="LoginName">
                             <el-input type="text" v-model="formData.LoginName" clearable placeholder="请输入登录名"></el-input>
                         </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="用户名" prop="UserName">
                             <el-input type="text" v-model="formData.UserName" clearable placeholder="请输入用户名"></el-input>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
                         <el-form-item label="密码" prop="Password">
                             <el-input type="password" v-model="formData.Password" clearable placeholder="请输入密码"></el-input>
                         </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="状态" prop="Status">
                             <el-switch v-model="formData.Status" active-text="启用" inactive-text="禁用">
                             </el-switch>
                         </el-form-item>
-                    </el-form>
-                </el-col>
-            </el-row>
+                    </el-col>
+                    <el-col :span="10">
+
+                    </el-col>
+                </el-row>
+
+            </el-form>
         </page-main>
 
         <fixed-action-bar>
@@ -61,6 +77,7 @@ export default {
         };
         return {
             id: 0,
+            pageTitle: "添加",
             formData: {},
             formLoading: true,
             //表单验证
@@ -89,6 +106,8 @@ export default {
         this.route = this.$route.query;
         if (this.route.id) this.id = this.$base64.DeCode(this.route.id);
         if (this.id < 0) this.goBack();
+
+        if (this.id > 0) this.pageTitle = "编辑";
 
         this.loadFormData();
     },
@@ -138,7 +157,7 @@ export default {
                         })
                         .catch(() => {
                             this.formLoading = false;
-                            this.$message.error("远程通讯失败");
+                            // this.$message.error("远程通讯失败");
                         });
                 } else {
                     this.$message.warning("请检查表单信息是否填写完整");

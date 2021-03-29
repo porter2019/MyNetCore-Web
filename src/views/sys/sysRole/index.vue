@@ -6,11 +6,11 @@
             <div class="table-tool">
                 <ul class="filter-container">
                     <li class="filter-item">
-                        <label>用户组名：</label>
+                        <label>用户组名</label>
                         <el-input v-model="pageQuery.RoleName" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
                     </li>
                     <li class="filter-item">
-                        <label class="aaa">创建日期：</label>
+                        <label class="aaa">创建日期</label>
                         <el-date-picker v-model="searchRangeDate" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" @change="searchDateChange"></el-date-picker>
                     </li>
                 </ul>
@@ -31,7 +31,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="创建者" prop="CreatedUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建时间" prop="CreatedDate" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue,'yyyy-MM-dd hh:mm')" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="创建时间" prop="CreatedDate1" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center">
                     <template slot-scope="{row}">
                         <el-tag v-if="row.Status" type="success" size="small" effect="light">正常</el-tag>
@@ -227,11 +227,19 @@ export default {
                 }
             }
         },
-
         sortChange(data) {
             this.pageQuery.PageInfo.PageIndex = 1;
-            if (data.order != null) this.pageQuery.PageInfo.orderBy = data.prop + " " + data.order.replace("ending", "");
-            else delete this.pageQuery.PageInfo["orderBy"];
+            if (data.order != null) {
+                let orderColumn = data.prop + "";
+                let columnMap = new Map();
+                columnMap.set("CreatedDate1", "CreatedDate");
+                if (columnMap.has(data.prop)) {
+                    orderColumn = columnMap.get(data.prop);
+                }
+                this.pageQuery.PageInfo.orderBy = orderColumn + " " + data.order.replace("ending", "");
+            } else {
+                delete this.pageQuery.PageInfo["orderBy"];
+            }
             this.getPageList();
         },
         //行选中

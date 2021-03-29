@@ -59,38 +59,6 @@ export default {
             }
         },
         {
-            path: 'batchactionbar',
-            name: 'componentExtendExampleBatchactionbar',
-            component: () => import(/* webpackChunkName: 'component_extend_example' */ '@/views/component_extend_example/batchactionbar'),
-            meta: {
-                title: '批量操作栏'
-            }
-        },
-        {
-            path: 'tableautoheight',
-            name: 'componentExtendExampleTableautoheight',
-            component: () => import(/* webpackChunkName: 'component_extend_example' */ '@/views/component_extend_example/table.autoheight'),
-            meta: {
-                title: '表格自适应'
-            }
-        },
-        {
-            path: 'upload',
-            name: 'componentExtendExampleUpload',
-            component: () => import(/* webpackChunkName: 'component_extend_example' */ '@/views/component_extend_example/upload'),
-            meta: {
-                title: '上传'
-            }
-        },
-        {
-            path: 'imagepreview',
-            name: 'componentExtendExampleImagePreview',
-            component: () => import(/* webpackChunkName: 'component_extend_example' */ '@/views/component_extend_example/image.preview'),
-            meta: {
-                title: '图片预览'
-            }
-        },
-        {
             path: 'trend',
             name: 'componentExtendExampleTrend',
             component: () => import(/* webpackChunkName: 'component_extend_example' */ '@/views/component_extend_example/trend'),

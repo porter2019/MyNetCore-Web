@@ -1,27 +1,16 @@
 <template>
     <div>
-        <!-- <page-header title="系统用户列表" content="" /> -->
+        <!-- <page-header title="演示数据列表" content="" /> -->
 
         <page-main>
             <div class="table-tool">
                 <ul class="filter-container">
                     <li class="filter-item">
-                        <label>所属组</label>
-                        <el-select v-model="pageQuery.RoleId" clearable placeholder="请选择" @change="pageQuery.PageInfo.PageIndex=1;getPageList()" @clear="delete pageQuery['RoleId']">
-                            <el-option v-for="item in roleOptionList" :key="item.RoleId" :label="item.RoleName" :value="item.RoleId">
-                            </el-option>
-                        </el-select>
+                        <label>标题</label>
+                        <el-input v-model="pageQuery.Title" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
                     </li>
                     <li class="filter-item">
-                        <label>登录名</label>
-                        <el-input v-model="pageQuery.LoginName" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
-                    </li>
-                    <li class="filter-item">
-                        <label>用户名</label>
-                        <el-input v-model="pageQuery.UserName" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
-                    </li>
-                    <li class="filter-item">
-                        <label>创建日期</label>
+                        <label class="aaa">创建日期</label>
                         <el-date-picker v-model="searchRangeDate" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" @change="searchDateChange"></el-date-picker>
                     </li>
                 </ul>
@@ -32,14 +21,15 @@
             </div>
             <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
                 <!--列太少就不要用fixed-->
-                <el-table-column type="selection" width="40"></el-table-column>
-                <el-table-column label="登录名" prop="LoginName" sortable="custom" min-width="70" align="center" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="用户名" prop="UserName" min-width="70" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="所属组" prop="RoleInfo" min-width="140" align="center" show-overflow-tooltip>
-                    <template slot-scope="{row}">
-                        {{ formatRoleInfo(row.RoleInfo) }}
-                    </template>
-                </el-table-column>
+                <el-table-column type="selection" width="40" fixed="left"></el-table-column>
+                <el-table-column label="标题" prop="Title" sortable="custom" fixed="left" width="200" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="数量" prop="Num" sortable="custom" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="数量2" prop="Num" sortable="custom" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="性别" prop="SexText" prop2="Sex" sortable="custom" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="双精度" prop="ValueD" sortable="custom" :formatter="(row,column,cellValue,index)=>$numberUtil.formatMoney(cellValue)" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="金额" prop="ValueDe" sortable="custom" :formatter="(row,column,cellValue,index)=>$numberUtil.formatMoney(cellValue)" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="日期" prop="Date1" min-width="80" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue)" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="日期时间" prop="Date2" width="160" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="创建者" prop="CreatedUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="创建时间" prop="CreatedDate1" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center">
@@ -48,7 +38,7 @@
                         <el-tag v-else type="danger" size="small" effect="light">禁用</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="120" align="center">
+                <el-table-column label="操作" width="120" align="center" fixed="right">
                     <template slot-scope="{row}">
                         <el-button type="primary" size="mini" @click="show(row.Id)">查看</el-button>
                     </template>
@@ -56,12 +46,12 @@
             </el-table>
             <Pagination v-show="total>0" :total="total" :currentpage="pageQuery.PageInfo.PageIndex" :pagesize.sync="pageQuery.PageInfo.PageSize" @current-change="changePageIndex" @size-change="changePageSize" />
         </page-main>
+
     </div>
 </template>
 
 <script>
-import { apiGetSysUserPageList, apiDeleteSysUserByIds } from "@/api/sys/sysUser";
-import { apiGetSysRoleAllList } from "@/api/sys/sysRole";
+import { apiGetDemoMainPageList, apiDeleteDemoMainByIds } from "@/api/demo/main";
 
 export default {
     data() {
@@ -126,33 +116,15 @@ export default {
                     },
                 ],
             },
-
-            //组数据
-            roleOptionList: [],
         };
     },
     created() {
         this.getPageList();
-        this.loadRoleList();
     },
     methods: {
-        formatRoleInfo(roleInfo) {
-            if (!roleInfo) return "-";
-            var tempArr = [];
-            (roleInfo.split(",") || []).forEach((item) => {
-                if (item) {
-                    var roleArr = item.split(";");
-                    if (roleArr.length == 2) {
-                        tempArr.push(roleArr[1]);
-                    }
-                }
-            });
-            if (tempArr.length == 0) return "-";
-            return tempArr.join("，");
-        },
         getPageList() {
             this.listLoading = true;
-            apiGetSysUserPageList(this.pageQuery)
+            apiGetDemoMainPageList(this.pageQuery)
                 .then((res) => {
                     this.listLoading = false;
                     if (res.code === 200) {
@@ -164,20 +136,6 @@ export default {
                 })
                 .catch(() => {
                     this.listLoading = false;
-                });
-        },
-        //下拉列表数据
-        loadRoleList() {
-            apiGetSysRoleAllList()
-                .then((res) => {
-                    if (res.code === 200) {
-                        this.roleOptionList = res.data;
-                    } else {
-                        this.$message.error(res.msg);
-                    }
-                })
-                .catch(() => {
-                    this.$message.error("获取用户组数据失败");
                 });
         },
         modify(id) {
@@ -211,19 +169,21 @@ export default {
                 type: "warning",
             })
                 .then(() => {
-                    apiDeleteSysUserByIds(ids.join(",")).then((res) => {
-                        if (res.code === 200) {
-                            this.$message.success(res.msg);
-                            this.pageQuery.PageInfo.PageIndex = 1;
-                            this.getPageList();
-                        } else {
-                            this.$message.error(res.msg);
-                        }
-                    });
+                    apiDeleteDemoMainByIds(ids.join(","))
+                        .then((res) => {
+                            if (res.code === 200) {
+                                this.$message.success(res.msg);
+                                this.pageQuery.PageInfo.PageIndex = 1;
+                                this.getPageList();
+                            } else {
+                                this.$message.error(res.msg);
+                            }
+                        })
+                        .catch(() => {
+                            this.$message.error("远程通讯失败");
+                        });
                 })
-                .catch(() => {
-                    this.$message.error("远程通讯失败");
-                });
+                .catch(() => {});
         },
         searchDateChange(val) {
             if (!val) {
@@ -238,11 +198,13 @@ export default {
                 }
             }
         },
+
         sortChange(data) {
             this.pageQuery.PageInfo.PageIndex = 1;
             if (data.order != null) {
                 let orderColumn = data.prop + "";
                 let columnMap = new Map();
+                columnMap.set("SexText", "Sex");
                 columnMap.set("CreatedDate1", "CreatedDate");
                 if (columnMap.has(data.prop)) {
                     orderColumn = columnMap.get(data.prop);

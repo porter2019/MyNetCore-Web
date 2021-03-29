@@ -1,7 +1,7 @@
 <template>
     <div class="upload-container">
-        <div v-for="(item, index) in url" :key="index" class="images">
-            <el-image v-if="index < max" :src="item" :style="`width:${width}px;height:${height}px;`" fit="cover" />
+        <div v-for="(item, index) in files" :key="index" class="images">
+            <el-image v-if="index < max" :src="item.FileWebPath" :style="`width:${width}px;height:${height}px;`" fit="cover" />
             <div class="mask">
                 <div class="actions">
                     <span title="预览" @click="preview(index)">
@@ -10,28 +10,16 @@
                     <span title="移除" @click="remove(index)">
                         <i class="el-icon-delete" />
                     </span>
-                    <span v-show="url.length > 1" title="左移" :class="{'disabled': index == 0}" @click="move(index, 'left')">
+                    <span v-show="files.length > 1" title="左移" :class="{'disabled': index == 0}" @click="move(index, 'left')">
                         <i class="el-icon-back" />
                     </span>
-                    <span v-show="url.length > 1" title="右移" :class="{'disabled': index == url.length - 1}" @click="move(index, 'right')">
+                    <span v-show="files.length > 1" title="右移" :class="{'disabled': index == files.length - 1}" @click="move(index, 'right')">
                         <i class="el-icon-right" />
                     </span>
                 </div>
             </div>
         </div>
-        <el-upload
-            v-show="url.length < max"
-            :show-file-list="false"
-            :headers="headers"
-            :action="action"
-            :data="data"
-            :name="name"
-            :before-upload="beforeUpload"
-            :on-progress="onProgress"
-            :on-success="onSuccess"
-            drag
-            class="images-upload"
-        >
+        <el-upload v-show="files.length < max" :show-file-list="false" :headers="headers" :action="action" :data="data" :name="name" :before-upload="beforeUpload" :on-progress="onProgress" :on-success="onSuccess" drag class="images-upload">
             <div class="image-slot" :style="`width:${width}px;height:${height}px;`">
                 <i class="el-icon-plus" />
             </div>
@@ -42,7 +30,7 @@
         </el-upload>
         <div v-if="!notip" class="el-upload__tip">
             <div style="display: inline-block;">
-                <el-alert :title="`上传图片支持 ${ ext.join(' / ') } 格式，单张图片大小不超过 ${ size }MB，建议图片尺寸为 ${width}*${height}，且图片数量不超过 ${ max } 张`" type="info" show-icon :closable="false" />
+                <el-alert :title="`上传图片支持 ${ ext.join(' / ') } 格式，1单张图片大小不超过 ${ size }MB，建议图片尺寸为 ${width}*${height}，且图片数量不超过 ${ max } 张`" type="info" show-icon :closable="false" />
             </div>
         </div>
         <el-image-viewer v-if="imageViewerVisible" :on-close="() => {imageViewerVisible = false}" :url-list="[dialogImageUrl]" />
@@ -50,124 +38,131 @@
 </template>
 
 <script>
-import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
+import ElImageViewer from "element-ui/packages/image/src/image-viewer";
 
 export default {
-    name: 'ImagesUpload',
+    name: "ImagesUpload",
     components: {
-        ElImageViewer
+        ElImageViewer,
     },
     props: {
-        action: {
-            type: String,
-            required: true
-        },
+        // action: {
+        //     type: String,
+        //     required: true,
+        // },
         headers: {
             type: Object,
-            default: () => {}
+            default: function () {
+                return {
+                    "x-auth-token": this.$store.state.user.token,
+                };
+            },
         },
         data: {
             type: Object,
-            default: () => {}
+            default: () => {},
         },
         name: {
             type: String,
-            default: 'file'
+            default: "file",
         },
-        url: {
+        files: {
             type: Array,
-            default: () => []
+            default: () => [],
         },
         max: {
             type: Number,
-            default: 3
+            default: 3,
         },
         size: {
             type: Number,
-            default: 2
+            default: 2,
         },
         width: {
             type: Number,
-            default: 150
+            default: 150,
         },
         height: {
             type: Number,
-            default: 150
+            default: 150,
         },
         placeholder: {
             type: String,
-            default: ''
+            default: "",
         },
         notip: {
             type: Boolean,
-            default: false
+            default: false,
         },
         ext: {
             type: Array,
-            default: () => ['jpg', 'png', 'gif', 'bmp']
-        }
+            default: () => ["jpg", "png", "gif", "bmp"],
+        },
     },
     data() {
         return {
-            dialogImageUrl: '',
+            action: this.$global.UploadAction,
+            dialogImageUrl: "",
             imageViewerVisible: false,
             progress: {
-                preview: '',
-                percent: 0
-            }
-        }
+                preview: "",
+                percent: 0,
+            },
+        };
     },
     methods: {
         // 预览
         preview(index) {
-            this.dialogImageUrl = this.url[index]
-            this.imageViewerVisible = true
+            console.log(this.files[index], "预览");
+            this.dialogImageUrl = this.files[index].FileWebPath;
+            this.imageViewerVisible = true;
         },
         // 移除
         remove(index) {
-            let url = this.url
-            url.splice(index, 1)
-            this.$emit('update:url', url)
+            let files = this.files;
+            files.splice(index, 1);
+            this.$emit("update:files", files);
         },
         // 移动
         move(index, type) {
-            let url = this.url
-            if (type == 'left' && index != 0) {
-                url[index] = url.splice(index - 1, 1, url[index])[0]
+            let files = this.files;
+            if (type == "left" && index != 0) {
+                files[index] = files.splice(index - 1, 1, files[index])[0];
             }
-            if (type == 'right' && index != url.length - 1) {
-                url[index] = url.splice(index + 1, 1, url[index])[0]
+            if (type == "right" && index != files.length - 1) {
+                files[index] = files.splice(index + 1, 1, files[index])[0];
             }
-            this.$emit('update:url', url)
+            this.$emit("update:files", files);
         },
         beforeUpload(file) {
-            const fileName = file.name.split('.')
-            const fileExt = fileName[fileName.length - 1]
-            const isTypeOk = this.ext.indexOf(fileExt) >= 0
-            const isSizeOk = file.size / 1024 / 1024 < this.size
+            const fileName = file.name.split(".");
+            const fileExt = fileName[fileName.length - 1];
+            const isTypeOk = this.ext.indexOf(fileExt) >= 0;
+            const isSizeOk = file.size / 1024 / 1024 < this.size;
             if (!isTypeOk) {
-                this.$message.error(`上传图片只支持 ${ this.ext.join(' / ') } 格式！`)
+                this.$message.error(`上传图片只支持 ${this.ext.join(" / ")} 格式！`);
             }
             if (!isSizeOk) {
-                this.$message.error(`上传图片大小不能超过 ${this.size}MB！`)
+                this.$message.error(`上传图片大小不能超过 ${this.size}MB！`);
             }
             if (isTypeOk && isSizeOk) {
-                this.progress.preview = URL.createObjectURL(file)
+                this.progress.preview = URL.createObjectURL(file);
             }
-            return isTypeOk && isSizeOk
+            console.log(file, isTypeOk && isSizeOk);
+            return isTypeOk && isSizeOk;
         },
         onProgress(file) {
-            this.progress.percent = ~~file.percent
+            this.progress.percent = ~~file.percent;
             if (this.progress.percent == 100) {
-                this.progress.preview = ''
-                this.progress.percent = 0
+                this.progress.preview = "";
+                this.progress.percent = 0;
             }
         },
         onSuccess(res) {
-            this.$emit('on-success', res)
-        }
-    }
-}
+            this.$emit("on-success", res);
+        },
+    },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -245,7 +240,7 @@ export default {
             position: absolute;
             top: 0;
             &::after {
-                content: '';
+                content: "";
                 position: absolute;
                 width: 100%;
                 height: 100%;

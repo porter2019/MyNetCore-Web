@@ -1,16 +1,6 @@
 <template>
     <div class="upload-container">
-        <el-upload
-            :show-file-list="false"
-            :headers="headers"
-            :action="action"
-            :data="data"
-            :name="name"
-            :before-upload="beforeUpload"
-            :on-progress="onProgress"
-            :on-success="onSuccess"
-            drag
-        >
+        <el-upload :show-file-list="false" :headers="headers" :action="action" :data="data" :name="name" :before-upload="beforeUpload" :on-progress="onProgress" :on-success="onSuccess" drag>
             <el-image v-if="url === ''" :src="url === '' ? placeholder : url" :style="`width:${width}px;height:${height}px;`" fit="fill">
                 <div slot="error" class="image-slot">
                     <i class="el-icon-plus" />
@@ -47,97 +37,103 @@
 
 <script>
 export default {
-    name: 'ImageUpload',
+    name: "ImageUpload",
     props: {
-        action: {
-            type: String,
-            required: true
-        },
+        // action: {
+        //     type: String,
+        //     default: "",
+        //     // required: true,
+        // },
         headers: {
             type: Object,
-            default: () => {}
+            default: function () {
+                return {
+                    "x-auth-token": this.$store.state.user.token,
+                };
+            },
         },
         data: {
             type: Object,
-            default: () => {}
+            default: () => {},
         },
         name: {
             type: String,
-            default: 'file'
+            default: "file",
         },
         url: {
             type: String,
-            default: ''
+            default: "",
         },
         size: {
             type: Number,
-            default: 2
+            default: 2,
         },
         width: {
             type: Number,
-            default: 150
+            default: 150,
         },
         height: {
             type: Number,
-            default: 150
+            default: 150,
         },
         placeholder: {
             type: String,
-            default: ''
+            default: "",
         },
         notip: {
             type: Boolean,
-            default: false
+            default: false,
         },
         ext: {
             type: Array,
-            default: () => ['jpg', 'png', 'gif', 'bmp']
-        }
+            default: () => ["jpg", "png", "gif", "bmp"],
+        },
     },
     data() {
         return {
+            action: this.$global.UploadAction,
             dialogVisible: false,
             progress: {
-                preview: '',
-                percent: 0
-            }
-        }
+                preview: "",
+                percent: 0,
+            },
+        };
     },
     methods: {
         // 移除
         remove() {
-            this.$emit('update:url', '')
+            this.$emit("update:url", "");
         },
         beforeUpload(file) {
-            const fileName = file.name.split('.')
-            const fileExt = fileName[fileName.length - 1]
-            const isTypeOk = this.ext.indexOf(fileExt) >= 0
-            const isSizeOk = file.size / 1024 / 1024 < this.size
+            const fileName = file.name.split(".");
+            const fileExt = fileName[fileName.length - 1];
+            const isTypeOk = this.ext.indexOf(fileExt) >= 0;
+            const isSizeOk = file.size / 1024 / 1024 < this.size;
             if (!isTypeOk) {
-                this.$message.error(`上传图片只支持 ${ this.ext.join(' / ') } 格式！`)
+                this.$message.error(`上传图片只支持 ${this.ext.join(" / ")} 格式！`);
             }
             if (!isSizeOk) {
-                this.$message.error(`上传图片大小不能超过 ${this.size}MB！`)
+                this.$message.error(`上传图片大小不能超过 ${this.size}MB！`);
             }
             if (isTypeOk && isSizeOk) {
-                this.progress.preview = URL.createObjectURL(file)
+                this.progress.preview = URL.createObjectURL(file);
             }
-            return isTypeOk && isSizeOk
+            return isTypeOk && isSizeOk;
         },
         onProgress(file) {
-            this.progress.percent = ~~file.percent
+            this.progress.percent = ~~file.percent;
             if (this.progress.percent == 100) {
                 setTimeout(() => {
-                    this.progress.preview = ''
-                    this.progress.percent = 0
-                }, 1000)
+                    this.progress.preview = "";
+                    this.progress.percent = 0;
+                }, 1000);
             }
         },
         onSuccess(res) {
-            this.$emit('on-success', res)
-        }
-    }
-}
+            this.$emit("on-success", res);
+        },
+    },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -207,7 +203,7 @@ export default {
             position: absolute;
             top: 0;
             &::after {
-                content: '';
+                content: "";
                 position: absolute;
                 width: 100%;
                 height: 100%;

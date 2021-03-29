@@ -9,7 +9,7 @@
         <page-main>
             <el-row>
                 <el-col :md="24" :lg="12">
-                    <el-form ref="form" :model="form" label-width="120px">
+                    <el-form ref="form" :model="form" label-width="140px">
                         <el-form-item label="活动名称">
                             <el-input v-model="form.name" />
                         </el-form-item>

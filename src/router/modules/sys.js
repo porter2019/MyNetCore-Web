@@ -4,6 +4,7 @@ export default {
     path: '/sys',
     component: Layout,
     name: 'sys',
+    redirect: '/sys/sysUser/index',
     meta: {
         title: '系统设置',
         auth: ['sysUser.show', 'sysRole.show'],
