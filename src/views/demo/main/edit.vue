@@ -114,6 +114,73 @@
                 </el-row>
 
             </el-form>
+
+            <page-main title="明细">
+                <el-row class="dynamic-table-tools">
+                    <el-button size="small" icon="el-icon-plus" @click="dynamicAdd">添加</el-button>
+                    <el-button size="small" icon="el-icon-bottom" @click="dynamicInsert">插入</el-button>
+                    <el-button size="small" icon="el-icon-delete" @click="dynamicDelete">删除</el-button>
+                    <el-button size="small" icon="el-icon-delete-solid" @click="dynamicClear">清空</el-button>
+                </el-row>
+                <el-form ref="dynamicFormDataRef" :model="dynamicFormData">
+                    <el-table ref="dynamicFormTableRef" :data="dynamicFormData.dynamicFormItems" :highlight-current-row="true" :row-class-name="dynamicFormItemsClassName" @row-click="dynamicFormItemsRowClick">
+                        <el-table-column property="Name" label="姓名" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop="'dynamicFormItems.' + scope.$index + '.Name'" :rules="dynamicTableValidateRule.Name">
+                                    <el-input size="small" v-model="scope.row.Name"></el-input>
+                                </el-form-item>
+                            </template>
+                        </el-table-column>
+                        <el-table-column property="Sex" label="性别" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop="'dynamicFormItems.' + scope.$index + '.Sex'">
+                                    <el-select v-model="scope.row.Sex" placeholder="请选择">
+                                        <el-option v-for="item in sexOptions" :key="item.value" :label="item.label" :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </template>
+                        </el-table-column>
+                        <el-table-column property="Num" label="数量" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop=" 'dynamicFormItems.' + scope.$index + '.Num' " :rules="dynamicTableValidateRule.Num">
+                                    <el-input class="money-right" size="small" v-model="scope.row.Num" @input="calcItem(scope)"></el-input>
+                                </el-form-item>
+                            </template>
+                        </el-table-column>
+                        <el-table-column property="ValueDe" label="金额" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop=" 'dynamicFormItems.' + scope.$index + '.ValueDe' " :rules="dynamicTableValidateRule.ValueDe">
+                                    <el-input class="money-right" size="small" v-model="scope.row.ValueDe" @input="calcItem(scope)"></el-input>
+                                </el-form-item>
+                            </template>
+                        </el-table-column>
+                        <el-table-column property="TotalValue" label="总金额" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop=" 'dynamicFormItems.' + scope.$index + '.TotalValue' " :rules="dynamicTableValidateRule.TotalValue">
+                                    <el-input class="money-right" size="small" v-model="scope.row.TotalValue" :readonly="true"></el-input>
+                                </el-form-item>
+                            </template>
+                        </el-table-column>
+                        <el-table-column property="Date1" label="日期" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop=" 'dynamicFormItems.' + scope.$index + '.Date1' " :rules="dynamicTableValidateRule.Date1">
+                                    <el-date-picker v-model="scope.row.Date1" type="date" value-format="yyyy-MM-dd" :default-value="new Date()" placeholder="选择">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </template>
+                        </el-table-column>
+                        <el-table-column property="Remark" label="备注" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop="'dynamicFormItems.' + scope.$index + '.Remark'" :rules="dynamicTableValidateRule.Remark">
+                                    <el-input size="small" v-model="scope.row.Remark"></el-input>
+                                </el-form-item>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-form>
+            </page-main>
+
         </page-main>
 
         <fixed-action-bar>
@@ -164,6 +231,32 @@ export default {
                     label: "女",
                 },
             ],
+
+            //动态表格
+            dynamicFormData: {
+                dynamicFormItems: [], //明细数据
+            },
+            dynamicFormItemsRowIndex: 0, //表格选中的行索引
+
+            dynamicTableValidateRule: {
+                Name: [
+                    { required: true, message: "请输入", trigger: "blur" },
+                    { min: 1, max: 30, message: "标题长度范围在1-20之间" },
+                ],
+                Num: [
+                    { required: true, message: "请输入", trigger: "blur" },
+                    { pattern: this.$global.RegEx_Number, message: "只能输入正整数" },
+                ],
+                ValueDe: [
+                    { required: true, message: "请输入", trigger: "blur" },
+                    { pattern: this.$global.RegEx_Money, message: "只能输入金额" },
+                ],
+                TotalValue: [
+                    { required: true, message: "请输入", trigger: "blur" },
+                    { pattern: this.$global.RegEx_Money, message: "只能输入金额" },
+                ],
+                Date1: [{ required: true, message: "请输入", trigger: ["blur", "change"] }],
+            },
         };
     },
     created() {
@@ -189,15 +282,34 @@ export default {
                     if (this.formData.Attachs == null) {
                         this.formData.Attachs = [];
                     }
+                    //给动态表格复制
+                    this.dynamicFormData.dynamicFormItems = this.formData.Items || [];
                 })
                 .catch(() => {
                     this.formLoading = false;
                 });
         },
         saveFormData() {
+            console.log(this.formData);
+            if ((this.dynamicFormData.dynamicFormItems || []).length < 1) {
+                this.$message.warning("明细不能为空");
+                return;
+            }
+            if ((this.dynamicFormData.dynamicFormItems || []).length > 0) {
+                let tableFormIsValid = false;
+                this.$refs.dynamicFormDataRef.validate((valid) => {
+                    tableFormIsValid = valid;
+                });
+                if (!tableFormIsValid) {
+                    this.$message.warning("请检查明细是否都准确的填写完毕");
+                    return;
+                }
+            }
             this.$refs.formMain.validate((valid) => {
                 if (valid) {
                     this.formLoading = true;
+                    // let postData = JSON.parse(JSON.stringify(this.formData)); //对象拷贝
+                    // postData.Items = this.dynamicFormData.dynamicFormItems || [];
                     apiModifyDemoMainInfo(this.formData)
                         .then((res) => {
                             this.formLoading = false;
@@ -210,7 +322,6 @@ export default {
                         })
                         .catch(() => {
                             this.formLoading = false;
-                            // this.$message.error("远程通讯失败");
                         });
                 } else {
                     this.$message.warning("请检查表单信息是否填写完整");
@@ -222,6 +333,55 @@ export default {
                 path: "index",
             });
         },
+        //动态表格
+        dynamicFormItemsClassName({ row, rowIndex }) {
+            //把每一行的索引放进row
+            row.index = rowIndex;
+        },
+        //行点击
+        dynamicFormItemsRowClick(row, column, event) {
+            this.dynamicFormItemsRowIndex = row.index;
+        },
+        //添加一列
+        dynamicAdd() {
+            this.dynamicFormData.dynamicFormItems.push({ Name: "", Sex: 0, Num: 2, ValueDe: 0.0, TotalValue: 0.0, Date1: "2021-03-30", Remark: "默认值" });
+        },
+        //插入一列
+        dynamicInsert() {
+            this.dynamicFormData.dynamicFormItems.splice(this.dynamicFormItemsRowIndex, 0, { Name: "", Sex: 0, Num: 2, ValueDe: 0.0, TotalValue: 0.0, Date1: "2021-03-30", Remark: "默认值" });
+        },
+        //删除列
+        dynamicDelete() {
+            if ((this.dynamicFormData.dynamicFormItems || []).length == 0) {
+                this.$message.info("表格中没有任何数据");
+                return;
+            }
+            this.dynamicFormData.dynamicFormItems.splice(this.dynamicFormItemsRowIndex, 1);
+            this.$refs["dynamicFormDataRef"].clearValidate();
+        },
+        //清空表格
+        dynamicClear() {
+            if ((this.dynamicFormData.dynamicFormItems || []).length == 0) {
+                this.$message.info("表格中没有任何数据");
+                return;
+            }
+            this.$confirm("确定清空列表中的数据吗？", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            })
+                .then(() => {
+                    this.dynamicFormData.dynamicFormItems.splice(0, this.dynamicFormData.dynamicFormItems.length);
+                })
+                .catch(() => {});
+        },
+        calcItem(scope) {
+            let num = Number(scope.row.Num); // 数量
+            let value = Number(scope.row.ValueDe); //单价
+            let totalValue = this.$mathUtil.multiply(num, value, 2);
+            scope.row.TotalValue = totalValue;
+        },
+        //上传
         imageUploadSuccess(res) {
             if (res.code === 200) {
                 if ((res.data || []).length > 0) {

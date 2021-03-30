@@ -77,6 +77,31 @@ import Sys from './modules/sys'
 import Demo from './modules/demo'
 
 // 当 children 不为空的主导航只有一项时，则隐藏
+// let asyncRoutes = [
+//     {
+//         meta: {
+//             title: '默认',
+//             icon: 'sidebar-default'
+//         },
+//         children: [
+//             Demo,
+//             MultilevelMenuExample,
+//             BreadcrumbExample,
+//             KeepAliveExample,
+//             ComponentExample,
+//             PermissionExample
+//         ]
+//     },
+//     {
+//         meta: {
+//             title: '系统管理',
+//             icon: 'sidebar-videos'
+//         },
+//         children: [
+//             Sys
+//         ]
+//     }
+// ]
 let asyncRoutes = [
     {
         meta: {
@@ -85,20 +110,12 @@ let asyncRoutes = [
         },
         children: [
             Demo,
+            Sys,
             MultilevelMenuExample,
             BreadcrumbExample,
             KeepAliveExample,
             ComponentExample,
             PermissionExample
-        ]
-    },
-    {
-        meta: {
-            title: '系统管理',
-            icon: 'sidebar-videos'
-        },
-        children: [
-            Sys
         ]
     }
 ]

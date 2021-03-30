@@ -45,6 +45,14 @@
 .page-main {
     margin-bottom: 60px !important;
 }
+.dynamic-table-tools {
+    margin: 10px 0;
+}
+// 动态表格中的文本框高度
+.el-table .el-input--small .el-input__inner {
+    height: 40px !important;
+    line-height: 40px !important;
+}
 
 // 详情页
 .form-show,

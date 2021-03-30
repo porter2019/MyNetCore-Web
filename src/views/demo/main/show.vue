@@ -110,6 +110,28 @@
                     </el-col>
                 </el-row>
             </el-form>
+
+            <page-main title="明细">
+                <el-form ref="dynamicFormDataRef" :model="dynamicFormData">
+                    <el-table ref="dynamicFormTableRef" :data="dynamicFormData.dynamicFormItems" :highlight-current-row="true" :row-class-name="dynamicFormItemsClassName" @row-click="dynamicFormItemsRowClick">
+                        <!-- <el-table-column property="Name" label="姓名" align="center">
+                            <template slot-scope="scope">
+                                <el-form-item :prop="'dynamicFormItems.' + scope.$index + '.Name'" :rules="dynamicTableValidateRule.Name">
+                                    <el-input size="small" v-model="scope.row.Name"></el-input>
+                                </el-form-item>
+                            </template>
+                        </el-table-column> -->
+                        <el-table-column label="姓名" prop="Name" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="性别" prop="Sex" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="数量" prop="Num" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="金额" prop="ValueDe" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="总金额" prop="TotalValue" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="日期" prop="Date1":formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue)" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                        <el-table-column label="备注" prop="Remark" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                    </el-table>
+                </el-form>
+            </page-main>
+
         </page-main>
 
         <fixed-action-bar>
@@ -128,6 +150,13 @@ export default {
             id: 0,
             formData: {},
             formLoading: true,
+
+            //动态表格
+            dynamicFormData: {
+                dynamicFormItems: [], //明细数据
+            },
+            dynamicFormItemsRowIndex: 0, //表格选中的行索引
+            dynamicTableValidateRule: {},
         };
     },
     created() {
@@ -145,6 +174,8 @@ export default {
                 .then((res) => {
                     this.formLoading = false;
                     this.formData = res.data;
+                    //给动态表格复制
+                    this.dynamicFormData.dynamicFormItems = this.formData.Items || [];
                 })
                 .catch(() => {
                     this.formLoading = false;
@@ -160,6 +191,15 @@ export default {
             this.$router.push({
                 path: "index",
             });
+        },
+        //动态表格
+        dynamicFormItemsClassName({ row, rowIndex }) {
+            //把每一行的索引放进row
+            row.index = rowIndex;
+        },
+        //行点击
+        dynamicFormItemsRowClick(row, column, event) {
+            this.dynamicFormItemsRowIndex = row.index;
         },
     },
 };
