@@ -49,7 +49,7 @@
         </page-main>
 
         <fixed-action-bar>
-            <el-button icon="el-icon-edit" type="primary" @click="goModify()" v-if="id > 0 && !formLoading">编辑</el-button>
+            <el-button v-auth="'sysUser.modify'" icon="el-icon-edit" type="primary" @click="goModify()" v-if="id > 0 && !formLoading">编辑</el-button>
             <el-button icon="el-icon-back" @click="goBack()">返回</el-button>
         </fixed-action-bar>
     </div>

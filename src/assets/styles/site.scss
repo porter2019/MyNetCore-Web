@@ -25,6 +25,20 @@
         }
     }
 }
+.table-tool .el-input {
+    .el-input__inner {
+        height: 32px;
+        line-height: 32px;
+    }
+    .el-input__suffix {
+        .el-input__suffix-inner {
+            .el-input__icon {
+                height: 32px;
+                line-height: 32px;
+            }
+        }
+    }
+}
 .el-table .el-table__fixed-header-wrapper .el-table__header thead th,
 .el-table .el-table__header-wrapper .el-table__header thead th {
     // height: 50px;

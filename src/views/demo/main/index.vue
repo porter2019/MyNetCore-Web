@@ -15,8 +15,8 @@
                     </li>
                 </ul>
                 <div class="btn-container">
-                    <el-button class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
-                    <el-button class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
+                    <el-button v-auth="['demoMain.modify']" class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
+                    <el-button v-auth="'demoMain.delete'" class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
                 </div>
             </div>
             <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
@@ -24,15 +24,15 @@
                 <el-table-column type="selection" width="40" fixed="left"></el-table-column>
                 <el-table-column label="标题" prop="Title" sortable="custom" fixed="left" width="200" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="数量" prop="Num" sortable="custom" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="数量2" prop="Num" sortable="custom" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="数量2" prop="Num" sortable="custom" min-width="90" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="性别" prop="SexText" prop2="Sex" sortable="custom" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="双精度" prop="ValueD" sortable="custom" :formatter="(row,column,cellValue,index)=>$numberUtil.formatMoney(cellValue)" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="双精度" prop="ValueD" sortable="custom" :formatter="(row,column,cellValue,index)=>$numberUtil.formatMoney(cellValue)" min-width="90" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="金额" prop="ValueDe" sortable="custom" :formatter="(row,column,cellValue,index)=>$numberUtil.formatMoney(cellValue)" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="日期" prop="Date1" min-width="80" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue)" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="日期时间" prop="Date2" width="160" align="center" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建者" prop="CreatedUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="创建者" prop="CreatedUserName" min-width="90" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="创建时间" prop="CreatedDate1" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center">
+                <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center" fixed="right">
                     <template slot-scope="{row}">
                         <el-tag v-if="row.Status" type="success" size="small" effect="light">正常</el-tag>
                         <el-tag v-else type="danger" size="small" effect="light">禁用</el-tag>

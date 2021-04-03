@@ -26,8 +26,8 @@
                     </li>
                 </ul>
                 <div class="btn-container">
-                    <el-button class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
-                    <el-button class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
+                    <el-button v-auth="['sysUser.modify']" class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
+                    <el-button v-auth="'sysUser.delete'" class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
                 </div>
             </div>
             <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">

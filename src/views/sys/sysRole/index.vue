@@ -15,8 +15,8 @@
                     </li>
                 </ul>
                 <div class="btn-container">
-                    <el-button class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
-                    <el-button class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
+                    <el-button v-auth="['sysRole.modify']" class="btn-item" type="primary" size="small" icon="el-icon-plus" @click="modify()">添加</el-button>
+                    <el-button v-auth="'sysRole.delete'" class="btn-item" type="danger" size="small" icon="el-icon-delete" @click="del">删除</el-button>
                 </div>
             </div>
             <el-table v-loading="listLoading" ref="table" :data="pageListData" border fit style="width: 100%;" height="calc(100vh - 280px)" @sort-change="sortChange" @selection-change="changeSelectItem">
@@ -40,7 +40,7 @@
                 </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="{row}">
-                        <el-button type="success" v-if="!row.IsSuper" size="mini" @click="openPermitDialog(row.RoleId)">设置权限</el-button>
+                        <el-button v-auth="'sysRole.modify'" type="success" v-if="!row.IsSuper" size="mini" @click="openPermitDialog(row.RoleId)">设置权限</el-button>
                         <el-button type="primary" size="mini" @click="show(row.Id)">查看</el-button>
                     </template>
                 </el-table-column>

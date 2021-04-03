@@ -36,7 +36,12 @@ export function deepClone(target) {
 function hasPermission(permission) {
     if (store.state.settings.openPermission) {
         return store.state.user.permissions.some(v => {
-            return v === permission
+            if(v ==='ALL') 
+            {
+                return true;
+            }else{
+                return v === permission
+            }
         })
     } else {
         return true
