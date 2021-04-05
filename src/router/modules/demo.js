@@ -44,5 +44,27 @@ export default {
                 activeMenu: '/demo/main/index'
             }
         },
+        //经典树形结构
+        {
+            path: 'bookcategory/index',
+            name: 'bookCategory Index',
+            component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/bookcategory/index'),
+            meta: {
+                title: "书籍分类列表",
+                auth: ['bookCategory.show'],
+                icon: 'user',
+            }
+        },
+        {
+            path: 'bookcategory/edit',
+            name: 'bookCategory Edit',
+            component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/bookcategory/edit'),
+            meta: {
+                title: '书籍分类编辑',
+                auth: ['bookCategory.modify'],
+                sidebar: false,
+                activeMenu: '/demo/bookcategory/index'
+            }
+        },
     ]
 }
