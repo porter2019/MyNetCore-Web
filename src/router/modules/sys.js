@@ -19,7 +19,7 @@ export default {
             meta: {
                 title: "用户列表",
                 auth: ['sysUser.show'],
-                icon: 'user',
+                icon: 'sidebar-user',
             }
         },
         {
@@ -52,7 +52,7 @@ export default {
             meta: {
                 title: "用户组列表",
                 auth: ['sysRole.show'],
-                icon: 'users',
+                icon: 'sidebar-users',
             }
         },
         {

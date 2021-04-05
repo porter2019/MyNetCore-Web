@@ -29,6 +29,23 @@
                                     {{ formData.Title }}
                                 </el-form-item>
                             </el-col>
+                            <el-col :span="10">
+                                <el-form-item label="排序数字">
+                                    {{ formData.OrderNo }}
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="10">
+                                <el-form-item label="上级标题">
+                                    {{ formData.ParentTitle }}
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-form-item label="层级">
+                                    {{ formData.LevelNo }}
+                                </el-form-item>
+                            </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="10">

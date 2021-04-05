@@ -16,6 +16,13 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="排序数字" prop="OrderNo">
+                            <el-input type="text" v-model="formData.OrderNo" clearable placeholder="请输入"></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
             </el-form>
         </page-main>
 
@@ -51,6 +58,10 @@ export default {
                 Title: [
                     { required: true, message: "请输入标题", trigger: "blur" },
                     { min: 1, max: 30, message: "标题长度范围在1-30之间" },
+                ],
+                OrderNo: [
+                    { required: true, message: "请输入排序数字", trigger: "blur" },
+                    { pattern: this.$global.RegEx_Number, message: "只能输入数字" },
                 ],
             },
 

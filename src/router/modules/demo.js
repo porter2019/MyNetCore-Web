@@ -8,18 +8,18 @@ export default {
     meta: {
         title: '功能演示',
         auth: ['demoMain.show'],
-        icon: 'setting',
+        icon: 'sidebar-demo',
     },
     children: [
-        //主体
+        //综合表单
         {
             path: 'main/index',
             name: 'demoMain Index',
             component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/main/index'),
             meta: {
-                title: "主体列表",
+                title: "综合表单",
                 auth: ['demoMain.show'],
-                icon: 'user',
+                icon: 'sidebar-form',
             }
         },
         {
@@ -27,7 +27,7 @@ export default {
             name: 'demoMain Show',
             component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/main/show'),
             meta: {
-                title: '主体详情',
+                title: '表单详情',
                 auth: ['demoMain.show'],
                 sidebar: false,
                 activeMenu: '/demo/main/index'
@@ -38,7 +38,7 @@ export default {
             name: 'demoMain Edit',
             component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/main/edit'),
             meta: {
-                title: '主体编辑',
+                title: '表单编辑',
                 auth: ['demoMain.modify'],
                 sidebar: false,
                 activeMenu: '/demo/main/index'
@@ -50,9 +50,9 @@ export default {
             name: 'bookCategory Index',
             component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/bookcategory/index'),
             meta: {
-                title: "书籍分类列表",
+                title: "经典树形结构",
                 auth: ['bookCategory.show'],
-                icon: 'user',
+                icon: 'sidebar-tree',
             }
         },
         {

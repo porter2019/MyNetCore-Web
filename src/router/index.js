@@ -67,9 +67,6 @@ const constantRoutes = [
     }
 ]
 
-import MultilevelMenuExample from './modules/multilevel.menu.example'
-import BreadcrumbExample from './modules/breadcrumb.example'
-import KeepAliveExample from './modules/keep.alive.example'
 import ComponentExample from './modules/component.example'
 import PermissionExample from './modules/permission.example'
 
@@ -85,9 +82,6 @@ import Demo from './modules/demo'
 //         },
 //         children: [
 //             Demo,
-//             MultilevelMenuExample,
-//             BreadcrumbExample,
-//             KeepAliveExample,
 //             ComponentExample,
 //             PermissionExample
 //         ]
@@ -111,9 +105,6 @@ let asyncRoutes = [
         children: [
             Demo,
             Sys,
-            MultilevelMenuExample,
-            BreadcrumbExample,
-            KeepAliveExample,
             ComponentExample,
             PermissionExample
         ]
