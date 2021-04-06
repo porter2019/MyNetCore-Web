@@ -2,27 +2,48 @@
     <div>
         <page-main :title="pageTitle">
             <el-form v-loading="formLoading" ref="formMain" :model="formData" status-icon :rules="formValidateRules" label-width="140px" class="form-edit">
+                <el-row v-show="false">
+                    <el-col>
+                        <el-input type="hidden" v-model="formData.ImagePath"></el-input>
+                    </el-col>
+                </el-row>
                 <el-row>
                     <el-col :span="10">
-                        <el-form-item label="父级" prop="Parent">
-                            <el-input type="text" v-model="formData.Parent.Title" readonly placeholder="请选择">
-                                <el-button slot="append" @click="btnSelectParent">选择</el-button>
+                        <el-form-item label="名称" prop="Name">
+                            <el-input type="text" v-model="formData.Name" clearable placeholder="请输入"></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="分类" prop="CategoryName">
+                            <el-input type="text" v-model="formData.CategoryName" readonly placeholder="请选择">
+                                <el-button slot="append" @click="btnSelectCategory">选择</el-button>
                             </el-input>
                         </el-form-item>
                     </el-col>
+                </el-row>
+                <el-row>
                     <el-col :span="10">
-                        <el-form-item label="标题" prop="Title">
-                            <el-input type="text" v-model="formData.Title" clearable placeholder="请输入"></el-input>
+                        <el-form-item label="出版日期" prop="ReleaseDate">
+                            <el-date-picker v-model="formData.ReleaseDate" type="date" value-format="yyyy-MM-dd" :default-value="new Date()" placeholder="选择">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="20">
+                        <el-form-item label="图片">
+                            <image-upload :url.sync="formData.ImagePathFull" :data="{'tag':'images'}" @on-success="imageUploadSuccess" />
                         </el-form-item>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="10">
-                        <el-form-item label="排序数字" prop="OrderNo">
-                            <el-input type="text" v-model="formData.OrderNo" clearable placeholder="请输入"></el-input>
+                        <el-form-item label="附件">
+                            <file-upload :files="formData.Attachs" @on-success="attachUploadSuccess" />
                         </el-form-item>
                     </el-col>
                 </el-row>
+
             </el-form>
         </page-main>
 
@@ -31,8 +52,8 @@
             <el-button icon="el-icon-back" @click="goBack()">返回</el-button>
         </fixed-action-bar>
 
-        <el-dialog title="选择父级" :visible.sync="parentTreeDialogVisible" width="40%" @close="parentTreeDialogVisible=false" :destroy-on-close="true">
-            <el-input v-model="searchTreeTitle" size="small" clearable placeholder="请输入" @change="getTreeList()"></el-input>
+        <el-dialog title="选择分类" :visible.sync="parentTreeDialogVisible" width="40%" @close="parentTreeDialogVisible=false" :destroy-on-close="true">
+            <el-input v-model="searchTitle" size="small" clearable placeholder="请输入" @change="getTreeList()"></el-input>
             <el-tree :data="treeListData" ref="tree" node-key="Id" :check-strictly="true" show-checkbox :default-expand-all="true" :props="treeProps" @check-change="treeCheckChange"></el-tree>
             <span slot="footer" class="dialog-footer">
                 <el-button class="determine" type="primary" @click="confirmCurrentNode" size="small">确定</el-button>
@@ -44,30 +65,27 @@
 </template>
 
 <script>
-import { apiGetBookCategoryInfo, apiModifyBookCategoryInfo, apiGetBookCategoryTreeList } from "@/api/demo/bookCategory";
+import { apiGetBookInfoInfo, apiModifyBookInfoInfo } from "@/api/demo/bookInfo";
+import {apiGetBookCategoryTreeList } from "@/api/demo/bookCategory";
 
 export default {
     data() {
         return {
             id: 0,
             pageTitle: "添加",
-            formData: { Parent: { Title: "" } },
+            formData: {},
             formLoading: true,
             //表单验证
             formValidateRules: {
-                Title: [
-                    { required: true, message: "请输入标题", trigger: "blur" },
-                    { min: 1, max: 30, message: "标题长度范围在1-30之间" },
-                ],
-                OrderNo: [
-                    { required: true, message: "请输入排序数字", trigger: "blur" },
-                    { pattern: this.$global.RegEx_Number, message: "只能输入数字" },
+                Name: [
+                    { required: true, message: "请输入名称", trigger: "blur" },
+                    { min: 1, max: 30, message: "名称长度范围在1-30之间" },
                 ],
             },
 
             parentTreeDialogVisible: false,
             treeListData: [],
-            searchTreeTitle: "",
+            searchTitle: "",
             treeListLoading: true,
             treeProps: {
                 children: "Childs",
@@ -75,6 +93,7 @@ export default {
             },
             currentCheckId: 0,
             currentCheckTitle: "",
+
         };
     },
     created() {
@@ -87,7 +106,7 @@ export default {
         this.loadFormData();
     },
     methods: {
-        btnSelectParent() {
+        btnSelectCategory() {
             this.parentTreeDialogVisible = true;
             this.currentCheckId = 0;
             this.currentCheckTitle = "";
@@ -102,25 +121,19 @@ export default {
             }
         },
         confirmCurrentNode() {
-            if (this.formData.Id > 0) {
-                if (this.currentCheckId == this.formData.Id) {
-                    this.$message.warning("不能设置自己为父级");
-                    return;
-                }
-            }
-            this.formData.ParentId = this.currentCheckId;
-            this.formData.Parent.Title = this.currentCheckTitle;
+            this.formData.CategoryId = this.currentCheckId;
+            this.formData.CategoryName = this.currentCheckTitle;
             this.parentTreeDialogVisible = false;
         },
         getTreeList() {
             this.treeListLoading = true;
-            apiGetBookCategoryTreeList(this.searchTreeTitle)
+            apiGetBookCategoryTreeList(this.searchTitle)
                 .then((res) => {
                     this.treeListLoading = false;
                     if (res.code === 200) {
                         this.treeListData = res.data;
-                        if (this.formData.ParentId > 0) {
-                            this.$refs.tree.setCheckedKeys([this.formData.ParentId], true);
+                        if (this.formData.CategoryId > 0) {
+                            this.$refs.tree.setCheckedKeys([this.formData.CategoryId], true);
                         }
                     } else {
                         this.$message.error(res.msg);
@@ -130,15 +143,19 @@ export default {
                     this.treeListLoading = false;
                 });
         },
+
         //加载表单数据
         loadFormData() {
             this.formLoading = true;
-            apiGetBookCategoryInfo(this.id)
+            apiGetBookInfoInfo(this.id)
                 .then((res) => {
                     this.formLoading = false;
                     this.formData = res.data || {};
-                    if (!this.formData.Parent) {
-                        this.formData.Parent = { Title: "" };
+                    if (this.formData.ImagePath) {
+                        this.imageWebPath = process.env.VUE_APP_Attach_ROOT + this.formData.ImagePath;
+                    }
+                    if (this.formData.Attachs == null) {
+                        this.formData.Attachs = [];
                     }
                 })
                 .catch(() => {
@@ -149,7 +166,7 @@ export default {
             this.$refs.formMain.validate((valid) => {
                 if (valid) {
                     this.formLoading = true;
-                    apiModifyBookCategoryInfo(this.formData)
+                    apiModifyBookInfoInfo(this.formData)
                         .then((res) => {
                             this.formLoading = false;
                             if (res.code === 200) {
@@ -171,6 +188,42 @@ export default {
             this.$router.push({
                 path: "index",
             });
+        },
+
+        //上传
+        imageUploadSuccess(res) {
+            if (res.code === 200) {
+                if ((res.data || []).length > 0) {
+                    this.formData.ImagePathFull = res.data[0].FileWebPath;
+                    this.formData.ImagePath = res.data[0].FilePath;
+                } else {
+                    this.$message.error("上传成功，但是没有返回上传后的文件");
+                }
+            } else {
+                this.$message.error(res.msg);
+            }
+        },
+
+        attachUploadSuccess(res, file) {
+            if (res.code === 200) {
+                if ((res.data || []).length > 0) {
+                    this.formData.Attachs.push({
+                        FileExt: res.data[0].FileExt,
+                        FileName: res.data[0].FileName,
+                        FilePath: res.data[0].FilePath,
+                        FileSize: res.data[0].FileSize,
+                        FileType: res.data[0].FileType,
+                        FileWebPath: res.data[0].FileWebPath,
+                        name: res.data[0].FileSourceName,
+                        url: res.data[0].FileWebPath,
+                    });
+                } else {
+                    this.$message.error("上传成功，但是没有返回上传后的文件");
+                }
+            } else {
+                this.$message.error(res.msg);
+                this.formData.Attachs.pop();
+            }
         },
     },
 };

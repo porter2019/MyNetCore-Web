@@ -6,7 +6,7 @@
                     <div class="table-tool">
                         <ul class="filter-container">
                             <li class="filter-item">
-                                <el-input v-model="searchTitle" size="small" clearable placeholder="请输入" @change="formData = {}, getTreeList()"></el-input>
+                                <el-input v-model="searchTreeTitle" size="small" clearable placeholder="请输入" @change="formData = {}, getTreeList()"></el-input>
                             </li>
                         </ul>
                     </div>
@@ -75,7 +75,7 @@ export default {
     data() {
         return {
             treeListData: [],
-            searchTitle: "",
+            searchTreeTitle: "",
             treeListLoading: true,
             treeProps: {
                 children: "Childs",
@@ -94,7 +94,7 @@ export default {
         },
         getTreeList() {
             this.treeListLoading = true;
-            apiGetBookCategoryTreeList(this.searchTitle)
+            apiGetBookCategoryTreeList(this.searchTreeTitle)
                 .then((res) => {
                     this.treeListLoading = false;
                     if (res.code === 200) {

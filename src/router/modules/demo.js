@@ -66,5 +66,38 @@ export default {
                 activeMenu: '/demo/bookcategory/index'
             }
         },
+        //书籍信息
+        {
+            path: 'bookInfo/index',
+            name: 'bookInfo Index',
+            component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/bookInfo/index'),
+            meta: {
+                title: "书籍信息",
+                auth: ['bookInfo.show'],
+                icon: 'sidebar-form',
+            }
+        },
+        {
+            path: 'bookInfo/show',
+            name: 'bookInfo Show',
+            component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/bookInfo/show'),
+            meta: {
+                title: '书籍详情',
+                auth: ['bookInfo.show'],
+                sidebar: false,
+                activeMenu: '/demo/bookInfo/index'
+            }
+        },
+        {
+            path: 'bookInfo/edit',
+            name: 'bookInfo Edit',
+            component: () => import(/* webpackChunkName: 'demo' */ '@/views/demo/bookInfo/edit'),
+            meta: {
+                title: '书籍编辑',
+                auth: ['bookInfo.modify'],
+                sidebar: false,
+                activeMenu: '/demo/bookInfo/index'
+            }
+        },
     ]
 }

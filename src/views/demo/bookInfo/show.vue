@@ -1,0 +1,105 @@
+<template>
+    <div>
+        <page-main title="详情">
+            <el-form v-loading="formLoading" ref="formMain" :model="formData" label-width="140px" class="form-show">
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="名称">
+                            {{ formData.Name }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="所属分类">
+                            {{ formData.CategoryName }}
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="出版日期">
+                            {{ $dateUtil.formatDate(formData.ReleaseDate) }}
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="20">
+                        <el-form-item label="图片">
+                            <image-preview v-if="formData.ImagePathFull" :src="formData.ImagePathFull" :width="100" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="附件">
+                            <FilePreview :attachList="(formData.Attachs || [])"></FilePreview>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
+                        <el-form-item label="创建者">
+                            {{ formData.CreatedUserName }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="创建时间">
+                            {{ formData.CreatedDate }}
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+
+        </page-main>
+
+        <fixed-action-bar>
+            <el-button v-auth="'bookInfo.modify'" icon="el-icon-edit" type="primary" @click="goModify()" v-if="id > 0 && !formLoading">编辑</el-button>
+            <el-button icon="el-icon-back" @click="goBack()">返回</el-button>
+        </fixed-action-bar>
+    </div>
+</template>
+
+<script>
+import { apiGetBookInfoInfo } from "@/api/demo/bookInfo";
+
+export default {
+    data() {
+        return {
+            id: 0,
+            formData: {},
+            formLoading: true,
+        };
+    },
+    created() {
+        this.route = this.$route.query;
+        if (this.route.id) this.id = this.$base64.DeCode(this.route.id);
+        if (this.id <= 0) this.goBack();
+
+        this.loadFormData();
+    },
+    methods: {
+        //加载表单数据
+        loadFormData() {
+            this.formLoading = true;
+            apiGetBookInfoInfo(this.id)
+                .then((res) => {
+                    this.formLoading = false;
+                    this.formData = res.data;
+                })
+                .catch(() => {
+                    this.formLoading = false;
+                });
+        },
+        goModify() {
+            this.$router.push({
+                path: "edit",
+                query: { id: this.$base64.EnCode(this.id) },
+            });
+        },
+        goBack() {
+            this.$router.push({
+                path: "index",
+            });
+        },
+    },
+};
+</script>
