@@ -10,7 +10,7 @@
                         <el-input v-model="pageQuery.Title" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
                     </li>
                     <li class="filter-item">
-                        <label class="aaa">创建日期</label>
+                        <label>创建日期</label>
                         <el-date-picker v-model="searchRangeDate" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" @change="searchDateChange"></el-date-picker>
                     </li>
                 </ul>
