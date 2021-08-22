@@ -10,7 +10,7 @@
                         <el-input v-model="pageQuery.Title" size="small" clearable placeholder="请输入" @change="pageQuery.PageInfo.PageIndex=1;getPageList()"></el-input>
                     </li>
                     <li class="filter-item">
-                        <label>创建日期</label>
+                        <label>更新日期</label>
                         <el-date-picker v-model="searchRangeDate" size="small" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" @change="searchDateChange"></el-date-picker>
                     </li>
                 </ul>
@@ -30,8 +30,8 @@
                 <el-table-column label="金额" prop="ValueDe" sortable="custom" :formatter="(row,column,cellValue,index)=>$numberUtil.formatMoney(cellValue)" min-width="80" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="日期" prop="Date1" min-width="80" :formatter="(row,column,cellValue,index)=>$dateUtil.formatDate(cellValue)" align="center" header-align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="日期时间" prop="Date2" width="160" align="center" header-align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建者" prop="CreatedUserName" min-width="90" align="center" show-overflow-tooltip></el-table-column>
-                <el-table-column label="创建时间" prop="CreatedDate1" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="更新时间" prop="UpdatedDate1" sortable="custom" width="160" align="center" show-overflow-tooltip></el-table-column>
+                <el-table-column label="更新者" prop="UpdatedUserName" min-width="60" align="center" show-overflow-tooltip></el-table-column>
                 <el-table-column label="状态" prop="Status" sortable="custom" width="100" align="center" fixed="right">
                     <template slot-scope="{row}">
                         <el-tag v-if="row.Status" type="success" size="small" effect="light">正常</el-tag>
@@ -67,55 +67,7 @@ export default {
                 },
             },
             searchRangeDate: "",
-            pickerOptions: {
-                shortcuts: [
-                    {
-                        text: "最近一周",
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit("pick", [start, end]);
-                        },
-                    },
-                    {
-                        text: "最近一个月",
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                            picker.$emit("pick", [start, end]);
-                        },
-                    },
-                    {
-                        text: "最近三个月",
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                            picker.$emit("pick", [start, end]);
-                        },
-                    },
-                    {
-                        text: "最近半年",
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 180);
-                            picker.$emit("pick", [start, end]);
-                        },
-                    },
-                    {
-                        text: "最近一年",
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 360);
-                            picker.$emit("pick", [start, end]);
-                        },
-                    },
-                ],
-            },
+            pickerOptions: this.$global.DataPickShortcuts,
         };
     },
     created() {
@@ -187,12 +139,12 @@ export default {
         },
         searchDateChange(val) {
             if (!val) {
-                this.pageQuery.CreatedDate = "";
+                this.pageQuery.UpdatedDate = "";
                 this.pageQuery.PageInfo.PageIndex = 1;
                 this.getPageList();
             } else {
                 if (val.length == 2) {
-                    this.pageQuery.CreatedDate = val[0] + ";" + val[1];
+                    this.pageQuery.UpdatedDate = val[0] + ";" + val[1];
                     this.pageQuery.PageInfo.PageIndex = 1;
                     this.getPageList();
                 }
@@ -205,7 +157,7 @@ export default {
                 let orderColumn = data.prop + "";
                 let columnMap = new Map();
                 columnMap.set("SexText", "Sex");
-                columnMap.set("CreatedDate1", "CreatedDate");
+                columnMap.set("UpdatedDate1", "UpdatedDate");
                 if (columnMap.has(data.prop)) {
                     orderColumn = columnMap.get(data.prop);
                 }

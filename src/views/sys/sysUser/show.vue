@@ -35,6 +35,18 @@
                 </el-row>
                 <el-row>
                     <el-col :span="10">
+                        <el-form-item label="最后更新者">
+                            {{ formData.UpdatedUserName }}
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="10">
+                        <el-form-item label="最后更新时间">
+                            {{ formData.UpdatedDate }}
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="10">
                         <el-form-item label="创建者">
                             {{ formData.CreatedUserName }}
                         </el-form-item>

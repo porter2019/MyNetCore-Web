@@ -22,6 +22,94 @@ const RegEx_IdNo = /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[
 //文件上传地址
 const UploadAction = process.env.VUE_APP_API_ROOT + 'common/upload';
 
+//时间选择器
+const DataPickShortcuts = {
+    shortcuts: [
+        {
+            text: "今天",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                picker.$emit("pick", [start, end]);
+            },
+        },
+        {
+            text: "昨天",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+                end.setTime(end.getTime() - 3600 * 1000 * 24 * 1);
+                picker.$emit("pick", [start, end]);
+            },
+        },
+        // {
+        //     text: "前天",
+        //     onClick(picker) {
+        //         const end = new Date();
+        //         const start = new Date();
+        //         start.setTime(start.getTime() - 3600 * 1000 * 24 * 2);
+        //         end.setTime(end.getTime() - 3600 * 1000 * 24 * 2);
+        //         picker.$emit("pick", [start, end]);
+        //     },
+        // },
+        {
+            text: "最近三天",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 2);
+                picker.$emit("pick", [start, end]);
+            },
+        },
+        {
+            text: "最近一周",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                picker.$emit("pick", [start, end]);
+            },
+        },
+        {
+            text: "最近一个月",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                picker.$emit("pick", [start, end]);
+            },
+        },
+        {
+            text: "最近三个月",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                picker.$emit("pick", [start, end]);
+            },
+        },
+        {
+            text: "最近半年",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 180);
+                picker.$emit("pick", [start, end]);
+            },
+        },
+        {
+            text: "最近一年",
+            onClick(picker) {
+                const end = new Date();
+                const start = new Date();
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 360);
+                picker.$emit("pick", [start, end]);
+            },
+        },
+    ],
+};
+
 export {
     RegEx_AccountName,
     RegEx_Number,
@@ -31,4 +119,5 @@ export {
     RegEx_Email,
     RegEx_IdNo,
     UploadAction,
+    DataPickShortcuts,
 }
