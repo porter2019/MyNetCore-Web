@@ -4,6 +4,8 @@ import router from '@/router/index'
 import store from '@/store/index'
 import { Message } from 'element-ui'
 
+const tokenHeaderName = process.env.VUE_APP_TOKEN_HEADER_NAME || "AccessToken"
+
 const toLogin = () => {
     router.push({
         path: '/login',
@@ -28,7 +30,7 @@ request.interceptors.request.use(
         if (store.getters['user/isLogin']) {
             request.headers = {
                 'Content-Type': 'application/json',
-                "x-auth-token": store.state.user.token
+                [tokenHeaderName]: store.state.user.token
             }
         } else {
             request.headers = {

@@ -36,12 +36,7 @@ export function deepClone(target) {
 function hasPermission(permission) {
     if (store.state.settings.openPermission) {
         return store.state.user.permissions.some(v => {
-            if(v ==='ALL') 
-            {
-                return true;
-            }else{
-                return v === permission
-            }
+            return v.toLowerCase() === permission.toLowerCase()
         })
     } else {
         return true
@@ -49,6 +44,9 @@ function hasPermission(permission) {
 }
 
 export function auth(value) {
+    if(store.state.user.permissions.indexOf('ALL') != -1){
+        return true;
+    }
     let auth
     if (typeof value === 'string') {
         auth = hasPermission(value)
@@ -61,6 +59,9 @@ export function auth(value) {
 }
 
 export function authAll(value) {
+    if(store.state.user.permissions.indexOf('ALL') != -1){
+        return true;
+    }
     const auth = value.every(item => {
         return hasPermission(item)
     })

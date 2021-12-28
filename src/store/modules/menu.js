@@ -4,14 +4,11 @@ function hasPermission(permissions, route) {
     let isAuth = false
     if (route.meta && route.meta.auth) {
         isAuth = permissions.some(auth => {
-            if(auth === "ALL"){
-                return true;
-            }
             if (typeof route.meta.auth == 'string') {
-                return route.meta.auth === auth
+                return route.meta.auth.toLowerCase() === auth.toLowerCase()
             } else {
                 return route.meta.auth.some(routeAuth => {
-                    return routeAuth === auth
+                    return routeAuth.toLowerCase() === auth.toLowerCase()
                 })
             }
         })
@@ -25,7 +22,16 @@ function filterAsyncRoutes(routes, permissions) {
     const res = []
     routes.forEach(route => {
         const tmp = { ...route }
-        if (hasPermission(permissions, tmp)) {
+        if(permissions.indexOf('ALL') == -1){
+            if (hasPermission(permissions, tmp)) {
+                if (tmp.children) {
+                    tmp.children = filterAsyncRoutes(tmp.children, permissions)
+                    tmp.children.length && res.push(tmp)
+                } else {
+                    res.push(tmp)
+                }
+            }
+        }else{
             if (tmp.children) {
                 tmp.children = filterAsyncRoutes(tmp.children, permissions)
                 tmp.children.length && res.push(tmp)

@@ -96,7 +96,7 @@ export default {
         },
         testAccount(account) {
             this.form.account = account;
-            this.form.password = "123";
+            this.form.password = "111111";
             this.handleLogin();
         },
     },

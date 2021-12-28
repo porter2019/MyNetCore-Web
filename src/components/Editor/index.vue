@@ -30,6 +30,8 @@ import "tinymce/plugins/searchreplace";
 
 import axios from 'axios'
 
+const tokenHeaderName = process.env.VUE_APP_TOKEN_HEADER_NAME || "AccessToken"
+
 export default {
     name: "Editor",
     components: {
@@ -69,7 +71,7 @@ export default {
                     // success(img)
                     let formData = new FormData();
                     formData.append("img", blobInfo.blob());
-                    axios.defaults.headers.common["x-auth-token"] = this.$store.state.user.token;
+                    axios.defaults.headers.common[[tokenHeaderName]] = this.$store.state.user.token;
                     axios.post(this.$global.UploadAction,formData).then(res=>{
                         if(res.data.code === 200){
                             if((res.data.data || []).length > 0){

@@ -34,8 +34,8 @@
         </el-dialog>
     </div>
 </template>
-
 <script>
+const tokenHeaderName = process.env.VUE_APP_TOKEN_HEADER_NAME || "AccessToken"
 export default {
     name: "ImageUpload",
     props: {
@@ -48,7 +48,7 @@ export default {
             type: Object,
             default: function () {
                 return {
-                    "x-auth-token": this.$store.state.user.token,
+                    [tokenHeaderName]: this.$store.state.user.token,
                 };
             },
         },

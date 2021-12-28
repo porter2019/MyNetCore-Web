@@ -53,8 +53,6 @@ import './assets/styles/reset.scss'
 // 自定义样式
 import './assets/styles/site.scss'
 
-// import './mock'
-
 Vue.config.productionTip = false
 
 Vue.prototype.$eventBus = new Vue({
